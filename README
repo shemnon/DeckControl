@@ -1,3 +1,5 @@
 A Simple deck control
 
-to run `gradle demoOne`
+To see demo, clone this project locally and run
+```shell
+gradlew demoOne```
