@@ -4,6 +4,10 @@ dependencies {
     compile files("${System.properties['java.home']}/lib/jfxrt.jar")
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.1'
+}
+
 task demoOne (type: JavaExec) {
     main = 'com.github.shemnon.deckcontrol.DemoOne'
     classpath = sourceSets.test.runtimeClasspath
