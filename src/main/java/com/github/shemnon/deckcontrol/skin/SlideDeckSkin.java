@@ -3,6 +3,8 @@ package com.github.shemnon.deckcontrol.skin;
 import com.github.shemnon.deckcontrol.Deck;
 import javafx.animation.TranslateTransition;
 import javafx.animation.TranslateTransitionBuilder;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -11,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 /**
@@ -81,6 +84,16 @@ public class SlideDeckSkin  implements Skin<Deck> {
             currentNode = null;
         }
 
+        EventHandler<ActionEvent> hideOldNode = new EventHandler<ActionEvent>() {
+            Node hideNode = oldNode;
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (hideNode != null) {
+                    hideNode.setVisible(false);
+                }
+            }
+        };
         if (oldNode == currentNode) {
             return; // nothing to do
         } else if (lastIndex < shownIndex) {
@@ -91,12 +104,7 @@ public class SlideDeckSkin  implements Skin<Deck> {
                         .fromX(deck.getWidth())
                         .toX(0)
                         .duration(Duration.seconds(1))
-                        .onFinished(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                lockDeckValues();
-                            }
-                        })
+                        .onFinished(hideOldNode)
                         .build();
             } else if (oldNode != null) {
                 // slide last slide to left
@@ -105,12 +113,7 @@ public class SlideDeckSkin  implements Skin<Deck> {
                         .fromX(0)
                         .toX(-deck.getWidth())
                         .duration(Duration.seconds(1))
-                        .onFinished(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                lockDeckValues();
-                            }
-                        })
+                        .onFinished(hideOldNode)
                         .build();
             }
         } else {
@@ -121,12 +124,7 @@ public class SlideDeckSkin  implements Skin<Deck> {
                         .fromX(0)
                         .toX(deck.getWidth())
                         .duration(Duration.seconds(1))
-                        .onFinished(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                lockDeckValues();
-                            }
-                        })
+                        .onFinished(hideOldNode)
                         .build();
             } else if (currentNode != null) {
                 // slide current slide from left
@@ -135,20 +133,12 @@ public class SlideDeckSkin  implements Skin<Deck> {
                         .fromX(-deck.getWidth())
                         .toX(0)
                         .duration(Duration.seconds(1))
-                        .onFinished(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                lockDeckValues();
-                            }
-                        })
+                        .onFinished(hideOldNode)
                         .build();
             }
         }
         if (currentNode != null) {
             currentNode.setVisible(true);
-        }
-        if (oldNode != null) {
-            oldNode.setVisible(true);
         }
         translateTransition.play();
     }
@@ -169,6 +159,18 @@ public class SlideDeckSkin  implements Skin<Deck> {
                 slideNewValue();
             }
         });
+
+        // clip to normal bounds, for animations
+        final Rectangle clip = new Rectangle();
+        stack.layoutBoundsProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                clip.setWidth(stack.getLayoutBounds().getWidth());
+                clip.setHeight(stack.getLayoutBounds().getHeight());
+            }
+        });
+        stack.setClip(clip);
+
     }
 
 }
