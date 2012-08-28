@@ -17,7 +17,6 @@ import javafx.stage.Stage;
  * User: shemnon
  * Date: 27 Aug 2012
  * Time: 8:05 PM
- * To change this template use File | Settings | File Templates.
  */
 public class DemoOne extends Application {
     @Override
@@ -27,27 +26,29 @@ public class DemoOne extends Application {
 
         stage.setScene(SceneBuilder.create()
                 .root(
-                        VBoxBuilder.create().children(
-                                deck,
-                                HBoxBuilder.create().children(
-                                        ButtonBuilder.create()
-                                                .text("<<")
-                                                .onAction(new EventHandler<ActionEvent>() {
-                                                    @Override
-                                                    public void handle(ActionEvent actionEvent) {
-                                                        deck.previousNode();
-                                                    }
-                                                }).build(),
-                                        ButtonBuilder.create()
-                                                .text(">>")
-                                                .onAction(new EventHandler<ActionEvent>() {
-                                                    @Override
-                                                    public void handle(ActionEvent actionEvent) {
-                                                        deck.nextNode();
-                                                    }
-                                                }).build()
-                                ).build()
-                        ).build())
+                        VBoxBuilder.create()
+                                .fillWidth(false)
+                                .children(
+                                        deck,
+                                        HBoxBuilder.create().children(
+                                                ButtonBuilder.create()
+                                                        .text("<<")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.previousNode();
+                                                            }
+                                                        }).build(),
+                                                ButtonBuilder.create()
+                                                        .text(">>")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.nextNode();
+                                                            }
+                                                        }).build()
+                                        ).build()
+                                ).build())
                 .width(300)
                 .height(300)
                 .build());
