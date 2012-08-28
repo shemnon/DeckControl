@@ -11,10 +11,9 @@ import javafx.scene.control.Control;
 
 /**
  * Created with IntelliJ IDEA.
- * User: shemnon
+ * User: Danno Ferrin
  * Date: 27 Aug 2012
  * Time: 5:43 PM
- * To change this template use File | Settings | File Templates.
  */
 public class Deck extends Control {
 
