@@ -55,10 +55,14 @@ public class Deck extends Control {
     }
 
     public void nextNode() {
-        primaryNodeIndex.set(primaryNodeIndex().get() + 1);
+        if (primaryNodeIndex.get() + 1 < nodes.size()) {
+            primaryNodeIndex.set(primaryNodeIndex().get() + 1);
+        }
     }
 
     public void previousNode() {
-        primaryNodeIndex.set(primaryNodeIndex().get() - 1);
+        if (primaryNodeIndex.get() > 0) {
+            primaryNodeIndex.set(primaryNodeIndex().get() - 1);
+        }
     }
 }
