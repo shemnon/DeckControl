@@ -37,6 +37,7 @@ public class SlideDeckSkin  implements Skin<Deck> {
     public SlideDeckSkin (final Deck deck) {
         this.deck = deck;
         stack = new StackPane();
+        stack.getChildren().setAll(deck.getNodes());
         lockDeckValues();
         addListeners();
     }
@@ -145,6 +146,19 @@ public class SlideDeckSkin  implements Skin<Deck> {
 
 
     public void addListeners() {
+        // clip to normal bounds, for animations
+        final Rectangle clip = new Rectangle();
+
+        stack.setClip(clip);
+
+        stack.layoutBoundsProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                clip.setWidth(stack.getLayoutBounds().getWidth());
+                clip.setHeight(stack.getLayoutBounds().getHeight());
+            }
+        });
+
         deck.nodes().addListener(new ChangeListener<ObservableList<Node>>() {
             @Override
             public void changed(ObservableValue<? extends ObservableList<Node>> observableValue, ObservableList<Node> oldNodes, ObservableList<Node> newNodes) {
@@ -159,18 +173,6 @@ public class SlideDeckSkin  implements Skin<Deck> {
                 slideNewValue();
             }
         });
-
-        // clip to normal bounds, for animations
-        final Rectangle clip = new Rectangle();
-        stack.layoutBoundsProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                clip.setWidth(stack.getLayoutBounds().getWidth());
-                clip.setHeight(stack.getLayoutBounds().getHeight());
-            }
-        });
-        stack.setClip(clip);
-
     }
 
 }
