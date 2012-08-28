@@ -19,8 +19,7 @@ import javafx.stage.Stage;
 public class DemoOne extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        final Deck deck = new Deck();
-
+        final Deck deck = createDeck();
 
         stage.setScene(SceneBuilder.create()
                 .root(
@@ -56,10 +55,22 @@ public class DemoOne extends Application {
         stage.setHeight(300);
 
         stage.show();
+    }
+
+    private Deck createDeck() {
+        final Deck deck = new Deck();
         deck.getNodes().add(createTestNode("First"));
         deck.getNodes().add(createTestNode("Second"));
         deck.getNodes().add(createTestNode("Third"));
+        deck.getNodes().add(createTestNode("Fourth"));
+        deck.getNodes().add(createTestNode("Fifth"));
+        deck.getNodes().add(createTestNode("Sixth"));
+        deck.getNodes().add(createTestNode("Seventh"));
+        deck.getNodes().add(createTestNode("Eighth"));
+        deck.getNodes().add(createTestNode("Ninth"));
+        deck.getNodes().add(createTestNode("Tenth"));
         deck.setPrimaryNodeIndex(0);
+        return deck;
     }
 
     public Node createTestNode(String text) {
