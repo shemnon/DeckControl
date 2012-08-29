@@ -1,8 +1,7 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import javafx.animation.TranslateTransition;
-import javafx.animation.TranslateTransitionBuilder;
+import javafx.animation.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -19,27 +18,34 @@ import javafx.util.Duration;
 /**
  * Created with IntelliJ IDEA.
  * User: Danno Ferrin
- * Date: 27 Aug 2012
- * Time: 6:34 PM
+ * Date: 28 Aug 2012
+ * Time: 6:34 AM
  */
-public class SlideDeckSkin  implements Skin<Deck> {
+public class ShiftDeckSkin implements Skin<Deck> {
 
     protected Node oldNode;
     protected Node currentNode;
     int shownIndex = 0;
 
-    TranslateTransition translateTransition;
-
     protected StackPane stack;
+
+    SequentialTransition transitions;
 
     Deck deck;
     private ChangeListener<ObservableList<Node>> nodesListener;
-    private ChangeListener<Number> selectedIndexListener;
+    private ChangeListener<Number> primaryIndexListener;
 
-    public SlideDeckSkin (final Deck deck) {
+    public ShiftDeckSkin(final Deck deck) {
         this.deck = deck;
         stack = new StackPane();
         stack.getChildren().setAll(deck.getNodes());
+        transitions = new SequentialTransition();
+        transitions.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                transitions.getChildren().clear();
+            }
+        });
         lockDeckValues();
         addListeners();
     }
@@ -57,8 +63,8 @@ public class SlideDeckSkin  implements Skin<Deck> {
 
     @Override
     public void dispose() {
-        deck.nodes().removeListener(nodesListener);
-        deck.primaryNodeIndex().removeListener(selectedIndexListener);
+        deck.nodes().remove(nodesListener);
+        deck.primaryNodeIndex().removeListener(primaryIndexListener);
         oldNode = null;
         currentNode = null;
         stack = null;
@@ -99,54 +105,67 @@ public class SlideDeckSkin  implements Skin<Deck> {
                 }
             }
         };
+        ParallelTransition transition = new ParallelTransition();
         if (oldNode == currentNode) {
             return; // nothing to do
         } else if (lastIndex < shownIndex) {
+            if (oldNode != null) {
+                // slide last slide to left
+                transition.getChildren().add(
+                        TranslateTransitionBuilder.create()
+                                .node(oldNode)
+                                .fromX(0)
+                                .toX(-deck.getWidth())
+                                .duration(Duration.seconds(1))
+                                .onFinished(hideOldNode)
+                                .build());
+            }
             if (currentNode != null) {
                 // slide next slide from right
-                translateTransition = TranslateTransitionBuilder.create()
-                        .node(currentNode)
-                        .fromX(deck.getWidth())
-                        .toX(0)
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build();
-            } else if (oldNode != null) {
-                // slide last slide to left
-                translateTransition = TranslateTransitionBuilder.create()
-                        .node(oldNode)
-                        .fromX(0)
-                        .toX(-deck.getWidth())
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build();
+                currentNode.setTranslateX(deck.getWidth());
+                currentNode.setVisible(true);
+                transition.getChildren().add(
+                        TranslateTransitionBuilder.create()
+                            .node(currentNode)
+                            .fromX(deck.getWidth())
+                            .toX(0)
+                            .duration(Duration.seconds(1))
+                            .build());
             }
         } else {
             if (oldNode != null) {
-                // slide old slide to right
-                translateTransition = TranslateTransitionBuilder.create()
-                        .node(oldNode)
-                        .fromX(0)
-                        .toX(deck.getWidth())
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build();
-                currentNode.setTranslateX(0);
-            } else if (currentNode != null) {
-                // slide current slide from left
-                translateTransition = TranslateTransitionBuilder.create()
-                        .node(currentNode)
-                        .fromX(-deck.getWidth())
-                        .toX(0)
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build();
+                // slide last slide to right
+                transition.getChildren().add(
+                        TranslateTransitionBuilder.create()
+                            .node(oldNode)
+                            .fromX(0)
+                            .toX(deck.getWidth())
+                            .duration(Duration.seconds(1))
+                            .onFinished(hideOldNode)
+                            .build());
+            }
+            if (currentNode != null) {
+                // slide next slide from left
+                currentNode.setTranslateX(-deck.getWidth());
+                currentNode.setVisible(true);
+                transition.getChildren().add(
+                        TranslateTransitionBuilder.create()
+                            .node(currentNode)
+                            .fromX(-deck.getWidth())
+                            .toX(0)
+                            .duration(Duration.seconds(1))
+                            .build());
             }
         }
-        if (currentNode != null) {
-            currentNode.setVisible(true);
+        if (transitions.getStatus() == Animation.Status.RUNNING) {
+            Duration time = transitions.getCurrentTime();
+            transitions.stop();
+            transitions.getChildren().add(transition);
+            transitions.playFrom(time);
+        } else {
+            transitions.getChildren().setAll(transition);
+            transitions.playFrom(Duration.ZERO);
         }
-        translateTransition.play();
     }
 
 
@@ -173,13 +192,13 @@ public class SlideDeckSkin  implements Skin<Deck> {
         };
         deck.nodes().addListener(nodesListener);
 
-        selectedIndexListener = new ChangeListener<Number>() {
+        primaryIndexListener = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
                 slideNewValue();
             }
         };
-        deck.primaryNodeIndex().addListener(selectedIndexListener);
+        deck.primaryNodeIndex().addListener(primaryIndexListener);
     }
 
 }

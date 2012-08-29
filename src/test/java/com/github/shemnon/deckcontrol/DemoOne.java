@@ -44,6 +44,24 @@ public class DemoOne extends Application {
                                                                 deck.nextNode();
                                                             }
                                                         }).build()
+                                        ).build(),
+                                        HBoxBuilder.create().children(
+                                                ButtonBuilder.create()
+                                                        .text("Slide")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.SlideDeckSkin'");
+                                                            }
+                                                        }).build(),
+                                                ButtonBuilder.create()
+                                                        .text("Shift")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'");
+                                                            }
+                                                        }).build()
                                         ).build()
                                 ).build())
                 .width(300)
