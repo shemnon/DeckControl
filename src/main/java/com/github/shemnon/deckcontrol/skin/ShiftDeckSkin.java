@@ -128,6 +128,7 @@ public class ShiftDeckSkin implements Skin<Deck> {
             public void handle(ActionEvent actionEvent) {
                 if (hideNode != null) {
                     hideNode.setVisible(false);
+                    hideNode.setTranslateX(0);
                 }
             }
         };
