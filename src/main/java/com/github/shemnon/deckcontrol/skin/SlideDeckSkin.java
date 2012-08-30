@@ -27,7 +27,6 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import javafx.animation.TranslateTransition;
 import javafx.animation.TranslateTransitionBuilder;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -50,11 +49,8 @@ import javafx.util.Duration;
  */
 public class SlideDeckSkin  implements Skin<Deck> {
 
-    protected Node oldNode;
     protected Node currentNode;
     int shownIndex = 0;
-
-    TranslateTransition translateTransition;
 
     protected StackPane stack;
 
@@ -85,7 +81,6 @@ public class SlideDeckSkin  implements Skin<Deck> {
     public void dispose() {
         deck.nodes().removeListener(nodesListener);
         deck.primaryNodeIndex().removeListener(selectedIndexListener);
-        oldNode = null;
         currentNode = null;
         stack = null;
         deck = null;
@@ -93,6 +88,7 @@ public class SlideDeckSkin  implements Skin<Deck> {
 
     protected void lockDeckValues() {
         shownIndex = deck.getPrimaryNodeIndex();
+
         if (shownIndex >= 0 && shownIndex < deck.getNodes().size()) {
             currentNode = deck.getNodes().get(shownIndex);
         } else {
@@ -106,7 +102,7 @@ public class SlideDeckSkin  implements Skin<Deck> {
     }
 
     protected void slideNewValue() {
-        oldNode = currentNode;
+        final Node hideNode = currentNode;
         int lastIndex = shownIndex;
         shownIndex = deck.getPrimaryNodeIndex();
         if (shownIndex >= 0 && shownIndex < deck.getNodes().size()) {
@@ -116,8 +112,6 @@ public class SlideDeckSkin  implements Skin<Deck> {
         }
 
         EventHandler<ActionEvent> hideOldNode = new EventHandler<ActionEvent>() {
-            Node hideNode = oldNode;
-
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (hideNode != null) {
@@ -126,54 +120,59 @@ public class SlideDeckSkin  implements Skin<Deck> {
                 }
             }
         };
-        if (oldNode == currentNode) {
+        if (hideNode == currentNode) {
             return; // nothing to do
         } else if (lastIndex < shownIndex) {
             if (currentNode != null) {
                 // slide next slide from right
-                translateTransition = TranslateTransitionBuilder.create()
+                TranslateTransitionBuilder.create()
                         .node(currentNode)
                         .fromX(deck.getWidth())
                         .toX(0)
                         .duration(Duration.seconds(1))
                         .onFinished(hideOldNode)
-                        .build();
-            } else if (oldNode != null) {
+                        .build()
+                        .play();
+                currentNode.setVisible(true);
+            } else if (hideNode != null) {
                 // slide last slide to left
-                translateTransition = TranslateTransitionBuilder.create()
-                        .node(oldNode)
+                TranslateTransitionBuilder.create()
+                        .node(hideNode)
                         .fromX(0)
                         .toX(-deck.getWidth())
                         .duration(Duration.seconds(1))
                         .onFinished(hideOldNode)
-                        .build();
+                        .build()
+                        .play();
             }
         } else {
-            if (oldNode != null) {
+            if (hideNode != null) {
                 // slide old slide to right
-                translateTransition = TranslateTransitionBuilder.create()
-                        .node(oldNode)
+                TranslateTransitionBuilder.create()
+                        .node(hideNode)
                         .fromX(0)
                         .toX(deck.getWidth())
                         .duration(Duration.seconds(1))
                         .onFinished(hideOldNode)
-                        .build();
-                currentNode.setTranslateX(0);
+                        .build()
+                        .play();
+                if (currentNode != null) {
+                    currentNode.setTranslateX(0);
+                    currentNode.setVisible(true);
+                }
             } else if (currentNode != null) {
                 // slide current slide from left
-                translateTransition = TranslateTransitionBuilder.create()
+                TranslateTransitionBuilder.create()
                         .node(currentNode)
                         .fromX(-deck.getWidth())
                         .toX(0)
                         .duration(Duration.seconds(1))
                         .onFinished(hideOldNode)
-                        .build();
+                        .build()
+                        .play();
+                currentNode.setVisible(true);
             }
         }
-        if (currentNode != null) {
-            currentNode.setVisible(true);
-        }
-        translateTransition.play();
     }
 
 

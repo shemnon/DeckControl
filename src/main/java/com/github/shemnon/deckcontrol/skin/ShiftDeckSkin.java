@@ -49,13 +49,12 @@ import javafx.util.Duration;
  */
 public class ShiftDeckSkin implements Skin<Deck> {
 
-    protected Node oldNode;
     protected Node currentNode;
     int shownIndex = 0;
 
     protected StackPane stack;
 
-    SequentialTransition transitions;
+    SequentialTransition sequentialTransition;
 
     Deck deck;
     private ChangeListener<ObservableList<Node>> nodesListener;
@@ -65,11 +64,11 @@ public class ShiftDeckSkin implements Skin<Deck> {
         this.deck = deck;
         stack = new StackPane();
         stack.getChildren().setAll(deck.getNodes());
-        transitions = new SequentialTransition();
-        transitions.setOnFinished(new EventHandler<ActionEvent>() {
+        sequentialTransition = new SequentialTransition();
+        sequentialTransition.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                transitions.getChildren().clear();
+                sequentialTransition.getChildren().clear();
             }
         });
         lockDeckValues();
@@ -89,9 +88,8 @@ public class ShiftDeckSkin implements Skin<Deck> {
 
     @Override
     public void dispose() {
-        deck.nodes().remove(nodesListener);
+        deck.nodes().removeListener(nodesListener);
         deck.primaryNodeIndex().removeListener(primaryIndexListener);
-        oldNode = null;
         currentNode = null;
         stack = null;
         deck = null;
@@ -111,8 +109,8 @@ public class ShiftDeckSkin implements Skin<Deck> {
         }
     }
 
-    protected void slideNewValue() {
-        oldNode = currentNode;
+    protected void shiftNewValue() {
+        final Node oldNode = currentNode;
         int lastIndex = shownIndex;
         shownIndex = deck.getPrimaryNodeIndex();
         if (shownIndex >= 0 && shownIndex < deck.getNodes().size()) {
@@ -122,13 +120,11 @@ public class ShiftDeckSkin implements Skin<Deck> {
         }
 
         EventHandler<ActionEvent> hideOldNode = new EventHandler<ActionEvent>() {
-            Node hideNode = oldNode;
-
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (hideNode != null) {
-                    hideNode.setVisible(false);
-                    hideNode.setTranslateX(0);
+                if (oldNode != null) {
+                    oldNode.setVisible(false);
+                    oldNode.setTranslateX(0);
                 }
             }
         };
@@ -184,14 +180,14 @@ public class ShiftDeckSkin implements Skin<Deck> {
                             .build());
             }
         }
-        if (transitions.getStatus() == Animation.Status.RUNNING) {
-            Duration time = transitions.getCurrentTime();
-            transitions.stop();
-            transitions.getChildren().add(transition);
-            transitions.playFrom(time);
+        if (sequentialTransition.getStatus() == Animation.Status.RUNNING) {
+            Duration time = sequentialTransition.getCurrentTime();
+            sequentialTransition.stop();
+            sequentialTransition.getChildren().add(transition);
+            sequentialTransition.playFrom(time);
         } else {
-            transitions.getChildren().setAll(transition);
-            transitions.playFrom(Duration.ZERO);
+            sequentialTransition.getChildren().setAll(transition);
+            sequentialTransition.playFrom(Duration.ZERO);
         }
     }
 
@@ -222,7 +218,7 @@ public class ShiftDeckSkin implements Skin<Deck> {
         primaryIndexListener = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                slideNewValue();
+                shiftNewValue();
             }
         };
         deck.primaryNodeIndex().addListener(primaryIndexListener);
