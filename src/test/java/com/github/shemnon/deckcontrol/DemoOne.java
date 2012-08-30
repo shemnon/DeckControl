@@ -81,6 +81,14 @@ public class DemoOne extends Application {
                                                             }
                                                         }).build(),
                                                 ButtonBuilder.create()
+                                                        .text("Fade")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin'");
+                                                            }
+                                                        }).build(),
+                                                ButtonBuilder.create()
                                                         .text("Shift")
                                                         .onAction(new EventHandler<ActionEvent>() {
                                                             @Override
