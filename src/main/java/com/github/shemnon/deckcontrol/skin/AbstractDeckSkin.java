@@ -27,83 +27,90 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import javafx.animation.FadeTransitionBuilder;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.util.Duration;
+import javafx.scene.control.Skin;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Danno Ferrin
- * Date: 29 Aug 2012
- * Time: 6:39 PM
+ * Date: 30 Aug 2012
+ * Time: 6:36 PM
  */
-public class FadeDeckSkin extends AbstractDeckSkin {
+public class AbstractDeckSkin implements Skin<Deck> {
+    protected Node currentNode;
+    private Pane stack;
+    protected Deck deck;
+    private ChangeListener<ObservableList<Node>> nodesListener;
 
-    private ChangeListener<Number> selectedIndexListener;
-
-    public FadeDeckSkin(final Deck deck) {
-        super(deck);
+    public AbstractDeckSkin(final Deck deck) {
+        this.deck = deck;
+        stack = new Pane();
+        stack.getChildren().setAll(deck.getNodes());
+        positionDeck();
         addListeners();
     }
-    @Override
-    public void dispose() {
-        deck.primaryNodeIndex().removeListener(selectedIndexListener);
-        super.dispose();
-    }
 
-    protected void updateNewNode() {
-        final Node oldNode = currentNode;
+    protected void positionDeck() {
         int shownIndex = deck.getPrimaryNodeIndex();
         if (shownIndex >= 0 && shownIndex < deck.getNodes().size()) {
             currentNode = deck.getNodes().get(shownIndex);
         } else {
             currentNode = null;
         }
-
-        if (oldNode != currentNode) {
-            if (currentNode != null) {
-                currentNode.setOpacity(0.0);
-                currentNode.setVisible(true);
-                FadeTransitionBuilder.create()
-                        .node(currentNode)
-                        .fromValue(0.0)
-                        .toValue(1.0)
-                        .duration(Duration.seconds(1))
-                        .build()
-                        .play();
-            }
-            if (oldNode != null) {
-                // slide last slide to left
-                FadeTransitionBuilder.create()
-                        .node(oldNode)
-                        .toValue(0.0)
-                        .duration(Duration.seconds(1))
-                        .onFinished(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                oldNode.setVisible(false);
-                                oldNode.setOpacity(1.0);
-                            }
-                        })
-                        .build()
-                        .play();
+        for (Node n : stack.getChildren()) {
+            if (n != null) {
+                n.setVisible(n == currentNode);
             }
         }
     }
 
 
-    public void addListeners() {
-        selectedIndexListener = new ChangeListener<Number>() {
+    @Override
+    public Deck getSkinnable() {
+        return deck;
+    }
+
+    @Override
+    public Node getNode() {
+        return stack;
+    }
+
+    public void dispose() {
+        deck.nodes().removeListener(nodesListener);
+        currentNode = null;
+        stack = null;
+        deck = null;
+    }
+
+    private void addListeners() {
+        // clip to normal bounds, for animations
+        final Rectangle clip = new Rectangle();
+
+        stack.setClip(clip);
+
+        stack.layoutBoundsProperty().addListener(new InvalidationListener() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                updateNewNode();
+            public void invalidated(Observable observable) {
+                clip.setWidth(stack.getLayoutBounds().getWidth());
+                clip.setHeight(stack.getLayoutBounds().getHeight());
+            }
+        });
+
+        nodesListener = new ChangeListener<ObservableList<Node>>() {
+            @Override
+            public void changed(ObservableValue<? extends ObservableList<Node>> observableValue, ObservableList<Node> oldNodes, ObservableList<Node> newNodes) {
+                stack.getChildren().setAll(newNodes);
+                positionDeck();
             }
         };
-        deck.primaryNodeIndex().addListener(selectedIndexListener);
+        deck.nodes().addListener(nodesListener);
     }
 
 }

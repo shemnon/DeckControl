@@ -27,18 +27,15 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import javafx.animation.*;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransitionBuilder;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Skin;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 /**
@@ -47,23 +44,17 @@ import javafx.util.Duration;
  * Date: 28 Aug 2012
  * Time: 6:34 AM
  */
-public class ShiftDeckSkin implements Skin<Deck> {
+public class ShiftDeckSkin extends AbstractDeckSkin {
 
-    protected Node currentNode;
     int shownIndex = 0;
-
-    protected StackPane stack;
 
     SequentialTransition sequentialTransition;
 
-    Deck deck;
-    private ChangeListener<ObservableList<Node>> nodesListener;
     private ChangeListener<Number> primaryIndexListener;
 
     public ShiftDeckSkin(final Deck deck) {
-        this.deck = deck;
-        stack = new StackPane();
-        stack.getChildren().setAll(deck.getNodes());
+        super(deck);
+        shownIndex = deck.getPrimaryNodeIndex();
         sequentialTransition = new SequentialTransition();
         sequentialTransition.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
@@ -71,42 +62,14 @@ public class ShiftDeckSkin implements Skin<Deck> {
                 sequentialTransition.getChildren().clear();
             }
         });
-        lockDeckValues();
         addListeners();
     }
 
 
     @Override
-    public Deck getSkinnable() {
-        return deck;
-    }
-
-    @Override
-    public Node getNode() {
-        return stack;
-    }
-
-    @Override
     public void dispose() {
-        deck.nodes().removeListener(nodesListener);
         deck.primaryNodeIndex().removeListener(primaryIndexListener);
-        currentNode = null;
-        stack = null;
-        deck = null;
-    }
-
-    protected void lockDeckValues() {
-        shownIndex = deck.getPrimaryNodeIndex();
-        if (shownIndex >= 0 && shownIndex < deck.getNodes().size()) {
-            currentNode = deck.getNodes().get(shownIndex);
-        } else {
-            currentNode = null;
-        }
-        for (Node n : stack.getChildren()) {
-            if (n != null) {
-                n.setVisible(n == currentNode);
-            }
-        }
+        super.dispose();
     }
 
     protected void shiftNewValue() {
@@ -193,28 +156,6 @@ public class ShiftDeckSkin implements Skin<Deck> {
 
 
     public void addListeners() {
-        // clip to normal bounds, for animations
-        final Rectangle clip = new Rectangle();
-
-        stack.setClip(clip);
-
-        stack.layoutBoundsProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                clip.setWidth(stack.getLayoutBounds().getWidth());
-                clip.setHeight(stack.getLayoutBounds().getHeight());
-            }
-        });
-
-        nodesListener = new ChangeListener<ObservableList<Node>>() {
-            @Override
-            public void changed(ObservableValue<? extends ObservableList<Node>> observableValue, ObservableList<Node> oldNodes, ObservableList<Node> newNodes) {
-                stack.getChildren().setAll(newNodes);
-                lockDeckValues();
-            }
-        };
-        deck.nodes().addListener(nodesListener);
-
         primaryIndexListener = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
