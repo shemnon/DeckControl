@@ -1,11 +1,9 @@
 package com.github.shemnon.deckcontrol;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 
@@ -19,6 +17,7 @@ public class Deck extends Control {
 
     private ListProperty<Node> nodes = new SimpleListProperty<Node>(this, "nodes", FXCollections.<Node>observableArrayList());
     private IntegerProperty primaryNodeIndex = new SimpleIntegerProperty(this, "primaryNodeIndex", -1);
+    private ObjectProperty<Pos> alignment = new SimpleObjectProperty<Pos>(this, "algnment", null);
 
     public Deck() {
         getStyleClass().add("deck");
@@ -32,6 +31,10 @@ public class Deck extends Control {
         this.nodes.set(nodes);
     }
 
+    public ListProperty<Node> nodes() {
+        return nodes;
+    }
+
     public int getPrimaryNodeIndex() {
         return primaryNodeIndex.get();
     }
@@ -40,12 +43,20 @@ public class Deck extends Control {
         this.primaryNodeIndex.set(primaryNodeIndex);
     }
 
-    public ListProperty<Node> nodes() {
-        return nodes;
-    }
-
     public IntegerProperty primaryNodeIndex() {
         return primaryNodeIndex;
+    }
+
+    public Pos getAlignment() {
+        return alignment.get();
+    }
+
+    public void setAlignment(Pos alignment) {
+        this.alignment.set(alignment);
+    }
+
+    public ObjectProperty<Pos> alignment() {
+        return alignment;
     }
 
     @Override

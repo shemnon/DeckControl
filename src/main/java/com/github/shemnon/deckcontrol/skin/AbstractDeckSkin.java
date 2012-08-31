@@ -29,12 +29,12 @@ package com.github.shemnon.deckcontrol.skin;
 import com.github.shemnon.deckcontrol.Deck;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -43,16 +43,14 @@ import javafx.scene.shape.Rectangle;
  * Date: 30 Aug 2012
  * Time: 6:36 PM
  */
-public class AbstractDeckSkin implements Skin<Deck> {
+public class AbstractDeckSkin  extends StackPane implements Skin<Deck> {
     protected Node currentNode;
     private Pane stack;
     protected Deck deck;
-    private ChangeListener<ObservableList<Node>> nodesListener;
+    private InvalidationListener positionTrigger;
 
     public AbstractDeckSkin(final Deck deck) {
         this.deck = deck;
-        stack = new Pane();
-        stack.getChildren().setAll(deck.getNodes());
         positionDeck();
         addListeners();
     }
@@ -64,10 +62,75 @@ public class AbstractDeckSkin implements Skin<Deck> {
         } else {
             currentNode = null;
         }
-        for (Node n : stack.getChildren()) {
-            if (n != null) {
+
+        Pos pos = deck.getAlignment();
+        double top = 0;
+        double bottom = 0;
+        double height = 0;
+        double width = 0;
+        double deckPrefWidth = deck.getPrefWidth();
+        double deckPrefHeight = deck.getPrefHeight();
+        if (pos == null) {
+            stack = new StackPane();
+            stack.getChildren().setAll(deck.getNodes());
+            stack.layout(); // ??
+            getChildren().setAll(stack);
+            for (Node n : stack.getChildren()) {
+                if (n == null) continue;
+
                 n.setVisible(n == currentNode);
             }
+            return;
+        }
+        stack = new Pane();
+        stack.getChildren().setAll(deck.getNodes());
+        stack.layout(); // ??
+        getChildren().setAll(stack);
+        for (Node n : stack.getChildren()) {
+            if (n == null) continue;
+
+            n.setVisible(n == currentNode);
+            //n.setManaged(false);
+
+            Bounds nBounds = n.getBoundsInParent();
+            width = Math.max(width, nBounds.getWidth());
+            double nBaseline = n.getBaselineOffset();
+            double nHeight = nBounds.getHeight();
+            height = Math.max(height, nHeight);
+            top = Math.max(top, nBaseline);
+            bottom = Math.max(bottom, nHeight - nBaseline);
+        }
+
+        for (Node n : stack.getChildren()) {
+            if (n == null) continue;
+
+            double x = 0;
+            double y = 0;
+            double w = n.prefWidth(deckPrefHeight);
+            double h = n.prefHeight(deckPrefWidth);
+            switch (pos.getHpos()) {
+                case CENTER:
+                    x = (width - w)/2;
+                    break;
+                case RIGHT:
+                    x = width - w;
+                    break;
+            }
+
+            switch (pos.getVpos()) {
+                case BASELINE:
+                    y = top - n.getBaselineOffset();
+                    break;
+                case CENTER:
+                    y = (height - h)/2;
+                    break;
+                case BOTTOM:
+                    y = height - h;
+                    break;
+            }
+
+            n.relocate(x, y);
+
         }
     }
 
@@ -79,12 +142,14 @@ public class AbstractDeckSkin implements Skin<Deck> {
 
     @Override
     public Node getNode() {
-        return stack;
+        return this;
     }
 
     public void dispose() {
-        deck.nodes().removeListener(nodesListener);
+        deck.nodes().removeListener(positionTrigger);
+        deck.alignment().removeListener(positionTrigger);
         currentNode = null;
+        getChildren().clear();
         stack = null;
         deck = null;
     }
@@ -93,24 +158,25 @@ public class AbstractDeckSkin implements Skin<Deck> {
         // clip to normal bounds, for animations
         final Rectangle clip = new Rectangle();
 
-        stack.setClip(clip);
+        setClip(clip);
 
-        stack.layoutBoundsProperty().addListener(new InvalidationListener() {
+        layoutBoundsProperty().addListener(new InvalidationListener() {
             @Override
             public void invalidated(Observable observable) {
-                clip.setWidth(stack.getLayoutBounds().getWidth());
-                clip.setHeight(stack.getLayoutBounds().getHeight());
+                positionDeck();
+                clip.setWidth(getLayoutBounds().getWidth());
+                clip.setHeight(getLayoutBounds().getHeight());
             }
         });
 
-        nodesListener = new ChangeListener<ObservableList<Node>>() {
+        positionTrigger = new InvalidationListener() {
             @Override
-            public void changed(ObservableValue<? extends ObservableList<Node>> observableValue, ObservableList<Node> oldNodes, ObservableList<Node> newNodes) {
-                stack.getChildren().setAll(newNodes);
+            public void invalidated(Observable observable) {
                 positionDeck();
             }
         };
-        deck.nodes().addListener(nodesListener);
+        deck.nodes().addListener(positionTrigger);
+        deck.alignment().addListener(positionTrigger);
     }
 
 }

@@ -8,7 +8,9 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.1'
 }
 
-task demoOne (type: JavaExec) {
-    main = 'com.github.shemnon.deckcontrol.DemoOne'
-    classpath = sourceSets.test.runtimeClasspath
+['DemoOne','DemoTwo'].each { name ->
+    task "$name" (type: JavaExec) {
+        main = "com.github.shemnon.deckcontrol.$name"
+        classpath = sourceSets.test.runtimeClasspath
+    }
 }
