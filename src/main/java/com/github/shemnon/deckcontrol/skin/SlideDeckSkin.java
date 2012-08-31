@@ -55,7 +55,7 @@ public class SlideDeckSkin extends AbstractDeckSkin {
 
     @Override
     public void dispose() {
-        deck.primaryNodeIndex().removeListener(selectedIndexListener);
+        deck.primaryNodeIndexProperty().removeListener(selectedIndexListener);
         super.dispose();
     }
 
@@ -143,7 +143,7 @@ public class SlideDeckSkin extends AbstractDeckSkin {
                 slideNewValue();
             }
         };
-        deck.primaryNodeIndex().addListener(selectedIndexListener);
+        deck.primaryNodeIndexProperty().addListener(selectedIndexListener);
     }
 
 }

@@ -68,7 +68,7 @@ public class ShiftDeckSkin extends AbstractDeckSkin {
 
     @Override
     public void dispose() {
-        deck.primaryNodeIndex().removeListener(primaryIndexListener);
+        deck.primaryNodeIndexProperty().removeListener(primaryIndexListener);
         super.dispose();
     }
 
@@ -162,7 +162,7 @@ public class ShiftDeckSkin extends AbstractDeckSkin {
                 shiftNewValue();
             }
         };
-        deck.primaryNodeIndex().addListener(primaryIndexListener);
+        deck.primaryNodeIndexProperty().addListener(primaryIndexListener);
     }
 
 }

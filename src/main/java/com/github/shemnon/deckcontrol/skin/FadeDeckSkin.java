@@ -51,7 +51,7 @@ public class FadeDeckSkin extends AbstractDeckSkin {
     }
     @Override
     public void dispose() {
-        deck.primaryNodeIndex().removeListener(selectedIndexListener);
+        deck.primaryNodeIndexProperty().removeListener(selectedIndexListener);
         super.dispose();
     }
 
@@ -103,7 +103,7 @@ public class FadeDeckSkin extends AbstractDeckSkin {
                 updateNewNode();
             }
         };
-        deck.primaryNodeIndex().addListener(selectedIndexListener);
+        deck.primaryNodeIndexProperty().addListener(selectedIndexListener);
     }
 
 }

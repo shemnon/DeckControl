@@ -17,7 +17,7 @@ public class Deck extends Control {
 
     private ListProperty<Node> nodes = new SimpleListProperty<Node>(this, "nodes", FXCollections.<Node>observableArrayList());
     private IntegerProperty primaryNodeIndex = new SimpleIntegerProperty(this, "primaryNodeIndex", -1);
-    private ObjectProperty<Pos> alignment = new SimpleObjectProperty<Pos>(this, "algnment", null);
+    private ObjectProperty<Pos> alignment = new SimpleObjectProperty<Pos>(this, "alignment", null);
 
     public Deck() {
         getStyleClass().add("deck");
@@ -31,7 +31,7 @@ public class Deck extends Control {
         this.nodes.set(nodes);
     }
 
-    public ListProperty<Node> nodes() {
+    public ListProperty<Node> nodesProperty() {
         return nodes;
     }
 
@@ -43,7 +43,7 @@ public class Deck extends Control {
         this.primaryNodeIndex.set(primaryNodeIndex);
     }
 
-    public IntegerProperty primaryNodeIndex() {
+    public IntegerProperty primaryNodeIndexProperty() {
         return primaryNodeIndex;
     }
 
@@ -55,7 +55,7 @@ public class Deck extends Control {
         this.alignment.set(alignment);
     }
 
-    public ObjectProperty<Pos> alignment() {
+    public ObjectProperty<Pos> alignmentProperty() {
         return alignment;
     }
 
@@ -66,13 +66,13 @@ public class Deck extends Control {
 
     public void nextNode() {
         if (primaryNodeIndex.get() + 1 < nodes.size()) {
-            primaryNodeIndex.set(primaryNodeIndex().get() + 1);
+            primaryNodeIndex.set(primaryNodeIndexProperty().get() + 1);
         }
     }
 
     public void previousNode() {
         if (primaryNodeIndex.get() > 0) {
-            primaryNodeIndex.set(primaryNodeIndex().get() - 1);
+            primaryNodeIndex.set(primaryNodeIndexProperty().get() - 1);
         }
     }
 }

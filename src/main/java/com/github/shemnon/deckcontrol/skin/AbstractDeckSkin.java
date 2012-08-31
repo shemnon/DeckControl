@@ -146,8 +146,8 @@ public class AbstractDeckSkin  extends StackPane implements Skin<Deck> {
     }
 
     public void dispose() {
-        deck.nodes().removeListener(positionTrigger);
-        deck.alignment().removeListener(positionTrigger);
+        deck.nodesProperty().removeListener(positionTrigger);
+        deck.alignmentProperty().removeListener(positionTrigger);
         currentNode = null;
         getChildren().clear();
         stack = null;
@@ -175,8 +175,8 @@ public class AbstractDeckSkin  extends StackPane implements Skin<Deck> {
                 positionDeck();
             }
         };
-        deck.nodes().addListener(positionTrigger);
-        deck.alignment().addListener(positionTrigger);
+        deck.nodesProperty().addListener(positionTrigger);
+        deck.alignmentProperty().addListener(positionTrigger);
     }
 
 }
