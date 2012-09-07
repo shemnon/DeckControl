@@ -95,6 +95,14 @@ public class DemoOne extends Application {
                                                             public void handle(ActionEvent actionEvent) {
                                                                 deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'");
                                                             }
+                                                        }).build(),
+                                                ButtonBuilder.create()
+                                                        .text("Shelf")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'");
+                                                            }
                                                         }).build()
                                         ).build()
                                 ).build())
