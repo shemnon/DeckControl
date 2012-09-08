@@ -26,6 +26,7 @@
  */
 package com.github.shemnon.deckcontrol;
 
+import com.javafx.experiments.scenicview.ScenicView;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -51,7 +52,7 @@ import javafx.stage.Stage;
  */
 public class DemoTwo extends Application {
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(final Stage stage) throws Exception {
         final Deck deck = createDeck();
         final ToggleGroup skinGroup = new ToggleGroup();
         final ToggleGroup alignGroup = new ToggleGroup();
@@ -107,6 +108,15 @@ public class DemoTwo extends Application {
                                                             @Override
                                                             public void handle(ActionEvent actionEvent) {
                                                                 deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'");
+                                                            }
+                                                        }).build(),
+                                                RadioButtonBuilder.create()
+                                                        .text("Shelf")
+                                                        .toggleGroup(skinGroup)
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'");
                                                             }
                                                         }).build()
                                         ).build(),
@@ -234,6 +244,14 @@ public class DemoTwo extends Application {
                                                             @Override
                                                             public void handle(ActionEvent actionEvent) {
                                                                 deck.setAlignment(null);
+                                                            }
+                                                        }).build(),
+                                                ButtonBuilder.create()
+                                                        .text("ScenicView")
+                                                        .onAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                ScenicView.show(stage.getScene());
                                                             }
                                                         }).build()
                                         ).build()

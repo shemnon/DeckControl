@@ -42,6 +42,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -68,7 +69,9 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
     double spacing = 50;
     double leftOffset = -110;
     double rightOffset = 110;
-    private static final double SCALE_SMALL = 0.7;
+    double deckHeight = 0;
+    double scaleSmall = 0.7;
+    double reflectionSize = 0.25;
     private List<Item> items;
     private Group centered = new Group();
     private Group left = new Group();
@@ -77,6 +80,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
     private int centerIndex = 0;
     private Timeline timeline;
     private InvalidationListener shiftListener;
+    private InvalidationListener positionTrigger;
 
     public ShelfDeckSkin(Deck deck) {
         this.deck = deck;
@@ -90,8 +94,9 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         centered.getChildren().addAll(left, right, center);
         getChildren().addAll(centered);
         // update
+        positionDeck();
         layoutChildren();
-        update();
+        update(false);
     }
 
     private void createItems() {
@@ -99,7 +104,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         items = new ArrayList<Item>(nodes.size());
         for (Node n : nodes) {
             n.setVisible(true);
-            items.add(new Item(n));
+            items.add(new Item(n, reflectionSize));
         }
     }
 
@@ -119,6 +124,9 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
             item.dispose();
         }
         deck.primaryNodeIndexProperty().removeListener(shiftListener);
+        deck.nodesProperty().removeListener(positionTrigger);
+        deck.alignmentProperty().removeListener(positionTrigger);
+
     }
 
     protected void addListeners() {
@@ -131,6 +139,18 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         };
 
         deck.primaryNodeIndexProperty().addListener(shiftListener);
+
+        positionTrigger = new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                createItems();
+                positionDeck();
+                update(false);
+            }
+        };
+        deck.nodesProperty().addListener(positionTrigger);
+        deck.alignmentProperty().addListener(positionTrigger);
+
     }
 
     @Override
@@ -142,15 +162,16 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
             maxWidth = Math.max(item.prefWidth(-1), maxWidth);
             maxHeight = Math.max(item.prefHeight(-1), maxHeight);
         }
-        centered.setLayoutY((getHeight() - maxHeight) / 2);
+        centered.setLayoutY((getHeight()  - (maxHeight * 1.25)) / 2);
         centered.setLayoutX((getWidth() - maxWidth) / 2);
-        setPrefSize(maxWidth * 2, maxHeight * 1.5);
+        setPrefSize(maxWidth * 2, maxHeight * 1.25);
+        setMinSize(maxWidth, maxHeight * 1.25);
         leftOffset = -maxWidth / 2;
         rightOffset = maxWidth / 2;
         spacing = maxWidth / 4;
     }
 
-    private void update() {
+    private void update(boolean animate) {
         // move items to new homes in groups
         left.getChildren().clear();
         center.getChildren().clear();
@@ -170,51 +191,123 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         final ObservableList<KeyFrame> keyFrames = timeline.getKeyFrames();
         for (int i = 0; i < left.getChildren().size(); i++) {
             final Item it = items.get(i);
-            double newX = -left.getChildren().size() * spacing + spacing * i + leftOffset;
+            double newX = -left.getChildren().size() * spacing + spacing * i + leftOffset + it.left;
+            double newY = it.top;// * scaleSmall  + deckHeight * (1- scaleSmall) / 2;
             keyFrames.add(new KeyFrame(DURATION,
                     new KeyValue(it.translateXProperty(), newX, INTERPOLATOR),
-                    new KeyValue(it.scaleXProperty(), SCALE_SMALL, INTERPOLATOR),
-                    new KeyValue(it.scaleYProperty(), SCALE_SMALL, INTERPOLATOR),
+                    new KeyValue(it.translateYProperty(), newY, INTERPOLATOR),
+                    new KeyValue(it.scaleXProperty(), scaleSmall, INTERPOLATOR),
+                    new KeyValue(it.scaleYProperty(), scaleSmall, INTERPOLATOR),
                     new KeyValue(it.angle, 45.0, INTERPOLATOR)));
         }
         // add keyframe for center item
         final Item centerItem = items.get(centerIndex);
         keyFrames.add(new KeyFrame(DURATION,
-                new KeyValue(centerItem.translateXProperty(), 0, INTERPOLATOR),
+                new KeyValue(centerItem.translateXProperty(), centerItem.left, INTERPOLATOR),
+                new KeyValue(centerItem.translateYProperty(), centerItem.top, INTERPOLATOR),
                 new KeyValue(centerItem.scaleXProperty(), 1.0, INTERPOLATOR),
                 new KeyValue(centerItem.scaleYProperty(), 1.0, INTERPOLATOR),
                 new KeyValue(centerItem.angle, 90.0, INTERPOLATOR)));
         // add keyframes for right items
         for (int i = 0; i < right.getChildren().size(); i++) {
             final Item it = items.get(items.size() - i - 1);
-            final double newX = right.getChildren().size() * spacing - spacing * i + rightOffset;
+            final double newX = right.getChildren().size() * spacing - spacing * i + rightOffset + it.left;
+            double newY = it.top;// * scaleSmall * 2;
             keyFrames.add(new KeyFrame(DURATION,
                     new KeyValue(it.translateXProperty(), newX, INTERPOLATOR),
-                    new KeyValue(it.scaleXProperty(), SCALE_SMALL, INTERPOLATOR),
-                    new KeyValue(it.scaleYProperty(), SCALE_SMALL, INTERPOLATOR),
+                    new KeyValue(it.translateYProperty(), newY, INTERPOLATOR),
+                    new KeyValue(it.scaleXProperty(), scaleSmall, INTERPOLATOR),
+                    new KeyValue(it.scaleYProperty(), scaleSmall, INTERPOLATOR),
                     new KeyValue(it.angle, 135.0, INTERPOLATOR)));
         }
         // play animation
-        timeline.play();
+        timeline.playFrom(animate ? Duration.ZERO : DURATION);
     }
 
     public void shift(int shiftAmount) {
         if (centerIndex <= 0 && shiftAmount < 0) return;
         if (centerIndex >= items.size() - 1 && shiftAmount > 0) return;
         centerIndex += shiftAmount;
-        update();
+        update(true);
     }
+
+    protected void positionDeck() {
+        Pos pos = deck.getAlignment();
+        double top = 0;
+        double bottom = 0;
+        double height = 0;
+        double width = 0;
+        for (Item item : items) {
+            //Bounds nBounds = n.getBoundsInParent();
+            item.layout();
+            width = Math.max(width, item.prefWidth(-1));
+            double nBaseline = item.getBaselineOffset();
+            double nHeight = item.prefHeight(-1);
+            height = Math.max(height, nHeight);
+            top = Math.max(top, nBaseline);
+            bottom = Math.max(bottom, nHeight - nBaseline);
+        }
+
+         deckHeight = height;
+
+        if (pos == null) {
+            for (Item item : items) {
+                item.fill(width, height);
+                item.layoutChildren();
+                item.setTranslateX(0);
+                item.setTranslateY(0);
+            }
+            return;
+        }
+
+        for (Item item : items) {
+            item.fit();
+            double x = 0;
+            double y = 0;
+            double w = item.prefWidth(-1);
+            double h = item.prefHeight(-1);
+            switch (pos.getHpos()) {
+                case CENTER:
+                    x = (width - w) / 2;
+                    break;
+                case RIGHT:
+                    x = width - w;
+                    break;
+            }
+
+            switch (pos.getVpos()) {
+                case BASELINE:
+                    y = top - item.getBaselineOffset();
+                    break;
+                case CENTER:
+                    y = (height - h) / 2;
+                    break;
+                case BOTTOM:
+                    y = height - h;
+                    break;
+            }
+
+            item.left = x;
+            item.top = y;
+        }
+    }
+
 }
 
 class Item extends Parent {
 
     Node node;
 
-    double reflectionSize = 0.25;
+    double reflectionSize;
     double itemWidth;
     double itemHeight;
     double radiusH;
     double back;
+
+    double top;
+    double left;
+    double w;
+    double h;
 
     private PerspectiveTransform transform = new PerspectiveTransform();
     /**
@@ -223,14 +316,15 @@ class Item extends Parent {
     public final DoubleProperty angle = new SimpleDoubleProperty(45.0);
     private InvalidationListener resizeListener;
 
-    public Item(Node node) {
+    public Item(Node node, double reflectionSize) {
         this.node = node;
+        this.reflectionSize = reflectionSize;
 
         // create content
         setupTransform();
         Reflection reflection = new Reflection();
         reflection.setFraction(reflectionSize);
-        node.setEffect(reflection);
+        transform.setInput(reflection);
         setEffect(transform);
         getChildren().addAll(node);
         angle.set(45.0);
@@ -242,10 +336,15 @@ class Item extends Parent {
         addListeners();
     }
 
+    @Override
+    public double getBaselineOffset() {
+        return node.getBaselineOffset();
+    }
+
     private void updateAngle() {
         // calculate new transform
-        double lx = (radiusH - Math.sin(Math.toRadians(angle.get())) * radiusH - 1);
-        double rx = (radiusH + Math.sin(Math.toRadians(angle.get())) * radiusH + 1);
+        double lx = (radiusH - Math.sin(Math.toRadians(angle.get())) * radiusH);
+        double rx = (radiusH + Math.sin(Math.toRadians(angle.get())) * radiusH);
         double uly = (-Math.cos(Math.toRadians(angle.get())) * back);
         double ury = -uly;
         transform.setUlx(lx);
@@ -270,8 +369,13 @@ class Item extends Parent {
     }
 
     private void setupTransform() {
-        itemWidth = node.prefWidth(-1);
-        itemHeight = node.prefHeight(-1) * (1.0 + reflectionSize);
+        if (w == 0 || h == 0) {
+            itemWidth = node.prefWidth(-1);
+            itemHeight = node.prefHeight(-1)   * (1.0 + reflectionSize);
+        } else {
+            itemHeight = h  * (1.0 + reflectionSize);
+            itemWidth = w ;
+        }
         radiusH = itemWidth / 2;
         back = itemWidth / 10;
         updateAngle();
@@ -279,5 +383,26 @@ class Item extends Parent {
 
     public void dispose() {
         node.boundsInParentProperty().removeListener(resizeListener);
+    }
+
+    @Override
+    protected void layoutChildren() {
+                super.layoutChildren();
+        if (node.isManaged() && node.isResizable()) {
+            if (w != 0 && h != 0) {
+                node.resize(w, h);
+                setupTransform();
+            }
+        }
+    }
+
+    public void fill(double w, double h) {
+        this.w = w;
+        this.h = h;
+    }
+
+    public void fit() {
+        w = 0;
+        h = 0;
     }
 }

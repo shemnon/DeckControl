@@ -2,6 +2,7 @@ apply plugin: 'java'
 
 dependencies {
     compile files("${System.properties['java.home']}/lib/jfxrt.jar")
+    testCompile files("lib/ScenicView.jar")
 }
 
 task wrapper(type: Wrapper) {
