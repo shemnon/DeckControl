@@ -45,7 +45,7 @@ public class SpinPane extends Pane {
     /**
      * Angle Non-Observable Property
      */
-    public final DoubleProperty angle = new SimpleDoubleProperty(45.0);
+    public final DoubleProperty angle = new SimpleDoubleProperty(90);
 
     public SpinPane() {
 
