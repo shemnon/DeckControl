@@ -26,9 +26,16 @@
  */
 package com.github.shemnon.deckcontrol;
 
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.SceneBuilder;
 import javafx.scene.control.Button;
@@ -39,6 +46,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBoxBuilder;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,6 +58,67 @@ public class DemoThree extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         final SpinPane spinPane = createSpinPane();
+
+        final SpinPane flipPane = new SpinPane();
+        final Node front = createTestNode("Front ->");
+        final Node back = createTestNode("<- Back");
+        flipPane.getChildren().addAll(back, front);
+        back.setVisible(false);
+        final Duration halfSec = Duration.millis(500);
+        final Duration quarterSec = Duration.millis(250);
+        final Duration quarter2Sec = Duration.millis(250).add(Duration.ONE);
+        final Button flipButton = new Button("Flip");
+        flipButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                flipButton.setDisable(true);
+
+                Timeline timeline = new Timeline();
+                final ObservableList<KeyFrame> keyFrames = timeline.getKeyFrames();
+                if (front.isVisible()) {
+                    keyFrames.addAll(
+                            new KeyFrame(Duration.ZERO,
+                                    new KeyValue(flipPane.angleProperty(), 90),
+                                    new KeyValue(front.visibleProperty(), true),
+                                    new KeyValue(back.visibleProperty(), false)),
+                            new KeyFrame(quarterSec,
+                                    new KeyValue(flipPane.angleProperty(), 180, Interpolator.EASE_IN),
+                                    new KeyValue(front.visibleProperty(), true),
+                                    new KeyValue(back.visibleProperty(), false)),
+                            new KeyFrame(quarter2Sec,
+                                    new KeyValue(flipPane.angleProperty(), 0),
+                                    new KeyValue(front.visibleProperty(), false),
+                                    new KeyValue(back.visibleProperty(), true)),
+                            new KeyFrame(halfSec,
+                                    new KeyValue(flipPane.angleProperty(), 90, Interpolator.EASE_OUT),
+                                    new KeyValue(front.visibleProperty(), false),
+                                    new KeyValue(back.visibleProperty(), true),
+                                    new KeyValue(flipButton.disableProperty(), false))
+                    );
+                } else {
+                    keyFrames.addAll(
+                            new KeyFrame(Duration.ZERO,
+                                    new KeyValue(flipPane.angleProperty(), 90),
+                                    new KeyValue(front.visibleProperty(), false),
+                                    new KeyValue(back.visibleProperty(), true)),
+                            new KeyFrame(quarterSec,
+                                    new KeyValue(flipPane.angleProperty(), 0, Interpolator.EASE_IN),
+                                    new KeyValue(front.visibleProperty(), false),
+                                    new KeyValue(back.visibleProperty(), true)),
+                            new KeyFrame(quarter2Sec,
+                                    new KeyValue(flipPane.angleProperty(), 180),
+                                    new KeyValue(front.visibleProperty(), true),
+                                    new KeyValue(back.visibleProperty(), false)),
+                            new KeyFrame(halfSec,
+                                    new KeyValue(flipPane.angleProperty(), 90, Interpolator.EASE_OUT),
+                                    new KeyValue(front.visibleProperty(), true),
+                                    new KeyValue(back.visibleProperty(), false),
+                                    new KeyValue(flipButton.disableProperty(), false))
+                    );
+                }
+                timeline.play();
+            }
+        });
 
         Slider slider;
         stage.setScene(SceneBuilder.create()
@@ -64,17 +133,19 @@ public class DemoThree extends Application {
                                                         .max(360)
                                                         .value(90)
                                                         .build()
-                                        ).build()
+                                        ).build(),
+                                        flipPane,
+                                        flipButton
                                 ).build())
                 .width(300)
                 .height(300)
                 .build());
-         slider.valueProperty().addListener(new ChangeListener<Number>() {
-             @Override
-             public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                 spinPane.setAngle(newValue.doubleValue());
-             }
-         });
+        slider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                spinPane.setAngle(newValue.doubleValue());
+            }
+        });
 
         stage.setWidth(300);
         stage.setHeight(300);
