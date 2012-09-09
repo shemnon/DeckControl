@@ -66,7 +66,7 @@ public class DemoThree extends Application {
         back.setVisible(false);
         final Duration halfSec = Duration.millis(500);
         final Duration quarterSec = Duration.millis(250);
-        final Duration quarter2Sec = Duration.millis(250).add(Duration.ONE);
+        final Duration quarter2Sec = Duration.millis(250);//.add(Duration.ONE);
         final Button flipButton = new Button("Flip");
         flipButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
