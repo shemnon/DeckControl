@@ -33,6 +33,9 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
+import com.sun.javafx.css.StyleableDoubleProperty;
+import com.sun.javafx.css.StyleableProperty;
+import com.sun.javafx.css.converters.SizeConverter;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -41,6 +44,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -53,6 +57,7 @@ import javafx.scene.layout.Region;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,17 +66,96 @@ import java.util.List;
  */
 public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
+    private static List<StyleableProperty> STYLEABLES;
+
+    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_ANGLE =
+            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-angle",
+                    SizeConverter.getInstance(), 45.0) {
+
+                @Override
+                public boolean isSettable(ShelfDeckSkin deck) {
+                    return deck.backAngle == null || !deck.backAngle.isBound();
+                }
+
+                @Override
+                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                    return deck.backAngleProperty();
+                }
+            };
+
+    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_OFFSET =
+            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-offset",
+                    SizeConverter.getInstance(), 0.25) {
+
+                @Override
+                public boolean isSettable(ShelfDeckSkin deck) {
+                    return deck.backOffset == null || !deck.backOffset.isBound();
+                }
+
+                @Override
+                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                    return deck.backOffsetProperty();
+                }
+            };
+
+    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_SCALE =
+            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-scale",
+                    SizeConverter.getInstance(), 0.7) {
+
+                @Override
+                public boolean isSettable(ShelfDeckSkin deck) {
+                    return deck.backScale == null || !deck.backScale.isBound();
+                }
+
+                @Override
+                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                    return deck.backScaleProperty();
+                }
+            };
+
+    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_SPACING =
+            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-spacing",
+                    SizeConverter.getInstance(), 0.5) {
+
+                @Override
+                public boolean isSettable(ShelfDeckSkin deck) {
+                    return deck.backSpacing == null || !deck.backSpacing.isBound();
+                }
+
+                @Override
+                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                    return deck.backSpacingProperty();
+                }
+            };
+
+
+    @Override
+    @Deprecated
+    public List<StyleableProperty> impl_getStyleableProperties() {
+        if (STYLEABLES == null) {
+            final List<StyleableProperty> styleables = new ArrayList<StyleableProperty>(super.impl_getStyleableProperties());
+            Collections.addAll(styleables,
+                    BACK_ANGLE,
+                    BACK_OFFSET,
+                    BACK_SCALE,
+                    BACK_SPACING);
+            STYLEABLES = Collections.unmodifiableList(styleables);
+        }
+        return STYLEABLES;    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+
     private static final Duration DURATION = Duration.millis(500);
     private static final Interpolator INTERPOLATOR = Interpolator.EASE_BOTH;
 
     Deck deck;
 
-    double spacing = 50;
-    double leftOffset = -110;
-    double rightOffset = 110;
+    StyleableDoubleProperty backAngle;
+    StyleableDoubleProperty backOffset;
+    StyleableDoubleProperty backScale;
+    StyleableDoubleProperty backSpacing;
+    double maxWidth = 200;
     double deckHeight = 0;
-    double scaleSmall = 0.7;
-    double reflectionSize = 0.25;
     private List<Item> items;
     private Group centered = new Group();
     private Group left = new Group();
@@ -84,7 +168,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
     public ShelfDeckSkin(Deck deck) {
         this.deck = deck;
-        getStyleClass().add("displayshelf");
+        getStyleClass().add("shelfDeck");
 
         // create items
         createItems();
@@ -99,12 +183,152 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         update(false);
     }
 
+    public final void setBackAngle(double value) {
+        backAngleProperty().set(value);
+    }
+    public final double getBackAngle() {
+        return backAngle == null ? 45 : backAngle.get();
+    }
+
+    public final DoubleProperty backAngleProperty() {
+        if (backAngle == null) {
+            backAngle = new StyleableDoubleProperty(45.0) {
+
+                @Override
+                protected void invalidated() {
+                    update(false);
+                }
+
+                @Override
+                public StyleableProperty getStyleableProperty() {
+                    return BACK_ANGLE;
+                }
+
+                @Override
+                public Object getBean() {
+                    return ShelfDeckSkin.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "backAngle";
+                }
+            };
+        }
+        return backAngle;
+    }
+
+    public final void setBackOffset(double value) {
+        backOffsetProperty().set(value);
+    }
+    public final double getBackOffset() {
+        return backOffset == null ? 0.5 : backOffset.get();
+    }
+
+    public final DoubleProperty backOffsetProperty() {
+        if (backOffset == null) {
+            backOffset = new StyleableDoubleProperty(0.5) {
+
+                @Override
+                protected void invalidated() {
+                    update(false);
+                }
+
+                @Override
+                public StyleableProperty getStyleableProperty() {
+                    return BACK_OFFSET;
+                }
+
+                @Override
+                public Object getBean() {
+                    return ShelfDeckSkin.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "backOffset";
+                }
+            };
+        }
+        return backOffset;
+    }
+
+    public final void setBackScale(double value) {
+        backScaleProperty().set(value);
+    }
+    public final double getBackScale() {
+        return backScale == null ? 0.7 : backScale.get();
+    }
+
+    public final DoubleProperty backScaleProperty() {
+        if (backScale == null) {
+            backScale = new StyleableDoubleProperty(0.7) {
+
+                @Override
+                protected void invalidated() {
+                    update(false);
+                }
+
+                @Override
+                public StyleableProperty getStyleableProperty() {
+                    return BACK_SCALE;
+                }
+
+                @Override
+                public Object getBean() {
+                    return ShelfDeckSkin.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "backScale";
+                }
+            };
+        }
+        return backScale;
+    }
+
+    public final void setBackSpacing(double value) {
+        backSpacingProperty().set(value);
+    }
+    public final double getBackSpacing() {
+        return backSpacing == null ? 0.25: backSpacing.get();
+    }
+
+    public final DoubleProperty backSpacingProperty() {
+        if (backSpacing == null) {
+            backSpacing = new StyleableDoubleProperty(0.25) {
+
+                @Override
+                protected void invalidated() {
+                    update(false);
+                }
+
+                @Override
+                public StyleableProperty getStyleableProperty() {
+                    return BACK_SPACING;
+                }
+
+                @Override
+                public Object getBean() {
+                    return ShelfDeckSkin.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "backSpacing";
+                }
+            };
+        }
+        return backSpacing;
+    }
+
     private void createItems() {
         List<Node> nodes = deck.getNodes();
         items = new ArrayList<Item>(nodes.size());
         for (Node n : nodes) {
             n.setVisible(true);
-            items.add(new Item(n, reflectionSize));
+            items.add(new Item(n));
         }
     }
 
@@ -156,7 +380,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
     @Override
     protected void layoutChildren() {
         // keep centered centered
-        double maxWidth = 0;
+        maxWidth = 0;
         double maxHeight = 0;
         for (Item item : items) {
             maxWidth = Math.max(item.prefWidth(-1), maxWidth);
@@ -166,9 +390,6 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         centered.setLayoutX((getWidth() - maxWidth) / 2);
         setPrefSize(maxWidth * 2, maxHeight * 1.25);
         setMinSize(maxWidth, maxHeight * 1.25);
-        leftOffset = -maxWidth / 2;
-        rightOffset = maxWidth / 2;
-        spacing = maxWidth / 4;
     }
 
     private void update(boolean animate) {
@@ -188,6 +409,12 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         // create timeline to animate to new positions
         timeline = new Timeline();
         // add keyframes for left items
+        double spacing = maxWidth * getBackSpacing();
+        double rightOffset = maxWidth * getBackOffset();
+        double leftOffset = -rightOffset;
+        double scale = getBackScale();
+        double leftAngle = 90 - getBackAngle();
+        double rightAngle = 90 + getBackAngle();
         final ObservableList<KeyFrame> keyFrames = timeline.getKeyFrames();
         for (int i = 0; i < left.getChildren().size(); i++) {
             final Item it = items.get(i);
@@ -196,9 +423,9 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
             keyFrames.add(new KeyFrame(DURATION,
                     new KeyValue(it.translateXProperty(), newX, INTERPOLATOR),
                     new KeyValue(it.translateYProperty(), newY, INTERPOLATOR),
-                    new KeyValue(it.scaleXProperty(), scaleSmall, INTERPOLATOR),
-                    new KeyValue(it.scaleYProperty(), scaleSmall, INTERPOLATOR),
-                    new KeyValue(it.angle, 45.0, INTERPOLATOR)));
+                    new KeyValue(it.scaleXProperty(), scale, INTERPOLATOR),
+                    new KeyValue(it.scaleYProperty(), scale, INTERPOLATOR),
+                    new KeyValue(it.angle, leftAngle, INTERPOLATOR)));
         }
         // add keyframe for center item
         final Item centerItem = items.get(centerIndex);
@@ -216,9 +443,9 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
             keyFrames.add(new KeyFrame(DURATION,
                     new KeyValue(it.translateXProperty(), newX, INTERPOLATOR),
                     new KeyValue(it.translateYProperty(), newY, INTERPOLATOR),
-                    new KeyValue(it.scaleXProperty(), scaleSmall, INTERPOLATOR),
-                    new KeyValue(it.scaleYProperty(), scaleSmall, INTERPOLATOR),
-                    new KeyValue(it.angle, 135.0, INTERPOLATOR)));
+                    new KeyValue(it.scaleXProperty(), scale, INTERPOLATOR),
+                    new KeyValue(it.scaleYProperty(), scale, INTERPOLATOR),
+                    new KeyValue(it.angle, rightAngle, INTERPOLATOR)));
         }
         // play animation
         timeline.playFrom(animate ? Duration.ZERO : DURATION);
@@ -316,9 +543,9 @@ class Item extends Parent {
     public final DoubleProperty angle = new SimpleDoubleProperty(45.0);
     private InvalidationListener resizeListener;
 
-    public Item(Node node, double reflectionSize) {
+    public Item(Node node) {
         this.node = node;
-        this.reflectionSize = reflectionSize;
+        this.reflectionSize = 0.25;
 
         // create content
         setupTransform();

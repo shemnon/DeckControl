@@ -28,15 +28,14 @@ package com.github.shemnon.deckcontrol;
 
 import com.javafx.experiments.scenicview.ScenicView;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.SceneBuilder;
-import javafx.scene.control.ButtonBuilder;
-import javafx.scene.control.RadioButtonBuilder;
-import javafx.scene.control.ToggleButtonBuilder;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -56,6 +55,14 @@ public class DemoTwo extends Application {
         final Deck deck = createDeck();
         final ToggleGroup skinGroup = new ToggleGroup();
         final ToggleGroup alignGroup = new ToggleGroup();
+
+        ToggleButton bigReflectToggle = new ToggleButton("Flat Shelf");
+        bigReflectToggle.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean bigReflectButton, Boolean newSelected) {
+                stage.getScene().getStylesheets().setAll(newSelected ? "Flat.css" : "Quarter.css");
+            }
+        });
 
         stage.setScene(SceneBuilder.create()
                 .root(
@@ -118,8 +125,9 @@ public class DemoTwo extends Application {
                                                             public void handle(ActionEvent actionEvent) {
                                                                 deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'");
                                                             }
-                                                        }).build()
-                                        ).build(),
+                                                        }).build(),
+                                                bigReflectToggle
+                                            ).build(),
                                         HBoxBuilder.create().children(
                                                 ToggleButtonBuilder.create()
                                                         .text("NW")
@@ -256,13 +264,13 @@ public class DemoTwo extends Application {
                                                         }).build()
                                         ).build()
                                 ).build())
-                .width(300)
-                .height(300)
+                .width(350)
+                .height(350)
                 .build());
 
 
-        stage.setWidth(300);
-        stage.setHeight(300);
+        stage.setWidth(350);
+        stage.setHeight(350);
 
         stage.show();
     }
