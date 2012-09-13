@@ -46,13 +46,13 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Skin;
 import javafx.scene.effect.PerspectiveTransform;
-import javafx.scene.effect.Reflection;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
 
@@ -155,6 +155,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
     StyleableDoubleProperty backScale;
     StyleableDoubleProperty backSpacing;
     double maxWidth = 200;
+    double maxHeight = 200;
     double deckHeight = 0;
     private List<Item> items;
     private Group centered = new Group();
@@ -196,7 +197,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
                 @Override
                 protected void invalidated() {
-                    update(false);
+                    styleablePropertyInvalidated();
                 }
 
                 @Override
@@ -218,6 +219,11 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         return backAngle;
     }
 
+    private void styleablePropertyInvalidated() {
+        calculateChildSizes();
+        update(false);
+    }
+
     public final void setBackOffset(double value) {
         backOffsetProperty().set(value);
     }
@@ -231,7 +237,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
                 @Override
                 protected void invalidated() {
-                    update(false);
+                    styleablePropertyInvalidated();
                 }
 
                 @Override
@@ -266,7 +272,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
                 @Override
                 protected void invalidated() {
-                    update(false);
+                    styleablePropertyInvalidated();
                 }
 
                 @Override
@@ -301,7 +307,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
                 @Override
                 protected void invalidated() {
-                    update(false);
+                    styleablePropertyInvalidated();
                 }
 
                 @Override
@@ -379,17 +385,28 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
     @Override
     protected void layoutChildren() {
+        super.layoutChildren();
         // keep centered centered
-        maxWidth = 0;
-        double maxHeight = 0;
-        for (Item item : items) {
-            maxWidth = Math.max(item.prefWidth(-1), maxWidth);
-            maxHeight = Math.max(item.prefHeight(-1), maxHeight);
-        }
+        calculateChildSizes();
         centered.setLayoutY((getHeight()  - (maxHeight * 1.25)) / 2);
         centered.setLayoutX((getWidth() - maxWidth) / 2);
         setPrefSize(maxWidth * 2, maxHeight * 1.25);
         setMinSize(maxWidth, maxHeight * 1.25);
+    }
+
+    private void calculateChildSizes() {
+        double oldMaxWidth = maxWidth;
+        double oldMaxHeight = maxHeight;
+        maxWidth = 0;
+        maxHeight = 0;
+        for (Item item : items) {
+            item.layout();
+            maxWidth = Math.max(item.prefWidth(-1), maxWidth);
+            maxHeight = Math.max(item.prefHeight(-1), maxHeight);
+        }
+        if (maxWidth != oldMaxWidth || maxHeight != oldMaxHeight) {
+            update(false);
+        }
     }
 
     private void update(boolean animate) {
@@ -465,11 +482,10 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         double height = 0;
         double width = 0;
         for (Item item : items) {
-            //Bounds nBounds = n.getBoundsInParent();
-            item.layout();
-            width = Math.max(width, item.prefWidth(-1));
+            Bounds nBounds = item.getLayoutBounds();
+            width = Math.max(width, nBounds.getWidth());
             double nBaseline = item.getBaselineOffset();
-            double nHeight = item.prefHeight(-1);
+            double nHeight = nBounds.getHeight();
             height = Math.max(height, nHeight);
             top = Math.max(top, nBaseline);
             bottom = Math.max(bottom, nHeight - nBaseline);
@@ -525,7 +541,6 @@ class Item extends Parent {
 
     Node node;
 
-    double reflectionSize;
     double itemWidth;
     double itemHeight;
     double radiusH;
@@ -545,13 +560,9 @@ class Item extends Parent {
 
     public Item(Node node) {
         this.node = node;
-        this.reflectionSize = 0.25;
 
         // create content
         setupTransform();
-        Reflection reflection = new Reflection();
-        reflection.setFraction(reflectionSize);
-        transform.setInput(reflection);
         setEffect(transform);
         getChildren().addAll(node);
         angle.set(45.0);
@@ -598,9 +609,9 @@ class Item extends Parent {
     private void setupTransform() {
         if (w == 0 || h == 0) {
             itemWidth = node.prefWidth(-1);
-            itemHeight = node.prefHeight(-1)   * (1.0 + reflectionSize);
+            itemHeight = node.prefHeight(-1)   * (1.0);
         } else {
-            itemHeight = h  * (1.0 + reflectionSize);
+            itemHeight = h  * (1.0);
             itemWidth = w ;
         }
         radiusH = itemWidth / 2;
