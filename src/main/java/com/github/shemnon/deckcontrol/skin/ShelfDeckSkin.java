@@ -45,6 +45,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.WritableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -430,8 +431,9 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         double rightOffset = maxWidth * getBackOffset();
         double leftOffset = -rightOffset;
         double scale = getBackScale();
-        double leftAngle = 90 - getBackAngle();
-        double rightAngle = 90 + getBackAngle();
+        double angle = getBackAngle();
+        double leftAngle = 90 - angle;
+        double rightAngle = 90 + angle;
         final ObservableList<KeyFrame> keyFrames = timeline.getKeyFrames();
         for (int i = 0; i < left.getChildren().size(); i++) {
             final Item it = items.get(i);
@@ -463,6 +465,10 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                     new KeyValue(it.scaleXProperty(), scale, INTERPOLATOR),
                     new KeyValue(it.scaleYProperty(), scale, INTERPOLATOR),
                     new KeyValue(it.angle, rightAngle, INTERPOLATOR)));
+        }
+        if (angle < 0) {
+            FXCollections.reverse(left.getChildren());
+            FXCollections.reverse(right.getChildren());
         }
         // play animation
         timeline.playFrom(animate ? Duration.ZERO : DURATION);

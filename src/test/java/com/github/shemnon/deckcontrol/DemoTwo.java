@@ -87,7 +87,8 @@ public class DemoTwo extends Application {
                                                         "Fade.css",
                                                         "Shelf.css",
                                                         "ShelfFlat.css",
-                                                        "ShelfTight.css"
+                                                        "ShelfTight.css",
+                                                        "ShelfInverse.css"
                                                 )).build(),
                                         HBoxBuilder.create().children(
                                                 ToggleButtonBuilder.create()

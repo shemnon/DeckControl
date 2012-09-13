@@ -1,0 +1,7 @@
+.deck {
+  -fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin';
+}
+
+.shelfDeck {
+ -x-back-angle: -45;
+}
