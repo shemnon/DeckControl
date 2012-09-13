@@ -28,8 +28,7 @@ package com.github.shemnon.deckcontrol;
 
 import com.javafx.experiments.scenicview.ScenicView;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -53,16 +52,9 @@ public class DemoTwo extends Application {
     @Override
     public void start(final Stage stage) throws Exception {
         final Deck deck = createDeck();
-        final ToggleGroup skinGroup = new ToggleGroup();
         final ToggleGroup alignGroup = new ToggleGroup();
 
-        ToggleButton bigReflectToggle = new ToggleButton("Flat Shelf");
-        bigReflectToggle.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean bigReflectButton, Boolean newSelected) {
-                stage.getScene().getStylesheets().setAll(newSelected ? "Flat.css" : "Quarter.css");
-            }
-        });
+        final ComboBox cssCombo;
 
         stage.setScene(SceneBuilder.create()
                 .root(
@@ -88,46 +80,15 @@ public class DemoTwo extends Application {
                                                             }
                                                         }).build()
                                         ).build(),
-                                        HBoxBuilder.create().children(
-                                                RadioButtonBuilder.create()
-                                                        .text("Slide")
-                                                        .toggleGroup(skinGroup)
-                                                        .selected(true)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.SlideDeckSkin'");
-                                                            }
-                                                        }).build(),
-                                                RadioButtonBuilder.create()
-                                                        .text("Fade")
-                                                        .toggleGroup(skinGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin'");
-                                                            }
-                                                        }).build(),
-                                                RadioButtonBuilder.create()
-                                                        .text("Shift")
-                                                        .toggleGroup(skinGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'");
-                                                            }
-                                                        }).build(),
-                                                RadioButtonBuilder.create()
-                                                        .text("Shelf")
-                                                        .toggleGroup(skinGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'");
-                                                            }
-                                                        }).build(),
-                                                bigReflectToggle
-                                            ).build(),
+                                        cssCombo = ComboBoxBuilder.create()
+                                                .items(FXCollections.<Object>observableArrayList(
+                                                        "Slide.css",
+                                                        "Shift.css",
+                                                        "Fade.css",
+                                                        "Shelf.css",
+                                                        "ShelfFlat.css",
+                                                        "ShelfTight.css"
+                                                )).build(),
                                         HBoxBuilder.create().children(
                                                 ToggleButtonBuilder.create()
                                                         .text("NW")
@@ -243,7 +204,8 @@ public class DemoTwo extends Application {
                                                                 deck.setAlignment(Pos.BOTTOM_RIGHT);
                                                             }
                                                         }).build()
-                                        ).build(),HBoxBuilder.create().children(
+                                        ).build(),
+                                        HBoxBuilder.create().children(
                                                 ToggleButtonBuilder.create()
                                                         .text("Fill")
                                                         .toggleGroup(alignGroup)
@@ -268,6 +230,14 @@ public class DemoTwo extends Application {
                 .height(350)
                 .build());
 
+        cssCombo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                stage.getScene().getStylesheets().setAll(cssCombo.getSelectionModel().getSelectedItem().toString());
+;
+            }
+        });
+        cssCombo.getSelectionModel().selectFirst();
 
         stage.setWidth(350);
         stage.setHeight(350);
@@ -289,6 +259,7 @@ public class DemoTwo extends Application {
         deck.getNodes().add(createTestNode("Tenth"));
         deck.setPrimaryNodeIndex(0);
         //deck.setAlignment(Pos.BASELINE_CENTER);
+        deck.getStyleClass().setAll("deck");
         return deck;
     }
 

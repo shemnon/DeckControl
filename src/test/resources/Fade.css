@@ -1,0 +1,4 @@
+.deck {
+  -fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin';
+}
+
