@@ -83,6 +83,7 @@ public class DemoTwo extends Application {
                                         cssCombo = ComboBoxBuilder.create()
                                                 .items(FXCollections.<Object>observableArrayList(
                                                         "Slide.css",
+                                                        "Pile.css",
                                                         "Shift.css",
                                                         "Fade.css",
                                                         "Shelf.css",
@@ -258,6 +259,11 @@ public class DemoTwo extends Application {
         deck.getNodes().add(createTestNode("Eighth"));
         deck.getNodes().add(createTestNode("Ninth"));
         deck.getNodes().add(createTestNode("Tenth"));
+        deck.getNodes().add(createTestNode("Eleventh"));
+        deck.getNodes().add(createTestNode("Twelfth"));
+        deck.getNodes().add(createTestNode("Thirteenth"));
+        deck.getNodes().add(createTestNode("Fourteenth"));
+        deck.getNodes().add(createTestNode("Fifteenth"));
         deck.setPrimaryNodeIndex(0);
         //deck.setAlignment(Pos.BASELINE_CENTER);
         deck.getStyleClass().setAll("deck");

@@ -1,0 +1,8 @@
+.deck {
+  -fx-skin: 'com.github.shemnon.deckcontrol.skin.PileDeckSkin';
+}
+
+.deck PileDeckSkin {
+ -fx-padding: 30;
+}
+
