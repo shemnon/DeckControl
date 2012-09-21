@@ -27,9 +27,14 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
+import com.sun.javafx.css.StyleableDoubleProperty;
+import com.sun.javafx.css.StyleableProperty;
+import com.sun.javafx.css.converters.SizeConverter;
 import javafx.animation.*;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -37,6 +42,7 @@ import javafx.scene.Node;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,14 +53,47 @@ import java.util.List;
  */
 public class PileDeckSkin extends AbstractDeckSkin {
 
+    private static List<StyleableProperty> STYLEABLES;
+
+    private static final StyleableProperty<PileDeckSkin,Number> SPREAD_ANGLE =
+            new StyleableProperty<PileDeckSkin,Number>("-x-spread-angle",
+                    SizeConverter.getInstance(), 45.0) {
+
+                @Override
+                public boolean isSettable(PileDeckSkin deck) {
+                    return deck.spreadAngle == null || !deck.spreadAngle.isBound();
+                }
+
+                @Override
+                public WritableValue<Number> getWritableValue(PileDeckSkin deck) {
+                    return deck.spreadAngleProperty();
+                }
+            };
+
+    @Override
+    @Deprecated
+    public List<StyleableProperty> impl_getStyleableProperties() {
+        if (STYLEABLES == null) {
+            final List<StyleableProperty> styleables = new ArrayList<StyleableProperty>(super.impl_getStyleableProperties());
+            Collections.addAll(styleables,
+                    SPREAD_ANGLE);
+            STYLEABLES = Collections.unmodifiableList(styleables);
+        }
+        return STYLEABLES;    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+
     private ChangeListener<Number> selectedIndexListener;
     private int shownIndex;
     SequentialTransition sequentialTransition;
 
     double maxWidth, maxHeight;
 
+    StyleableDoubleProperty spreadAngle;
+
     public PileDeckSkin(final Deck deck) {
         super(deck);
+        getStyleClass().add("pileSkin");
         shownIndex = deck.getPrimaryNodeIndex();
         sequentialTransition = new SequentialTransition();
         sequentialTransition.setOnFinished(new EventHandler<ActionEvent>() {
@@ -79,6 +118,48 @@ public class PileDeckSkin extends AbstractDeckSkin {
         }
         super.dispose();
     }
+
+    public final void setSpreadAngle(double value) {
+        spreadAngleProperty().set(value);
+    }
+    public final double getSpreadAngle() {
+        return spreadAngle == null ? 45.0 : spreadAngle.get();
+    }
+
+    public final DoubleProperty spreadAngleProperty() {
+        if (spreadAngle == null) {
+            spreadAngle = new StyleableDoubleProperty(45.0) {
+
+                @Override
+                protected void invalidated() {
+                    styleablePropertyInvalidated();
+                }
+
+                @Override
+                public StyleableProperty getStyleableProperty() {
+                    return SPREAD_ANGLE;
+                }
+
+                @Override
+                public Object getBean() {
+                    return PileDeckSkin.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "spreadAngle";
+                }
+            };
+        }
+        return spreadAngle;
+    }
+
+    private void styleablePropertyInvalidated() {
+        positionDeck();
+        updateNewNode();
+    }
+
+
 
     protected void updateNewNode() {
         int lastIndex = shownIndex;
@@ -165,7 +246,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
         int i = size;
         while (i > 0) {
             double sobol = SobolSequences.sobel(i--);
-            nodes.get(i).setRotate((sobol-0.5)*45);
+            nodes.get(i).setRotate((sobol-0.5)*getSpreadAngle());
         }
 
         super.positionDeck();

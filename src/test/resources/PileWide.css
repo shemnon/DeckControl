@@ -3,6 +3,7 @@
 }
 
 .pileSkin {
+ -x-spread-angle: 180;
  -fx-padding: 30;
 }
 

@@ -28,6 +28,8 @@ package com.github.shemnon.deckcontrol;
 
 import com.javafx.experiments.scenicview.ScenicView;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -90,7 +92,9 @@ public class DemoTwo extends Application {
                                                         "ShelfFlat.css",
                                                         "ShelfTight.css",
                                                         "ShelfInverse.css"
-                                                )).build(),
+                                                ))
+                                                .editable(true)
+                                                .build(),
                                         HBoxBuilder.create().children(
                                                 ToggleButtonBuilder.create()
                                                         .text("NW")
@@ -232,10 +236,10 @@ public class DemoTwo extends Application {
                 .height(350)
                 .build());
 
-        cssCombo.setOnAction(new EventHandler<ActionEvent>() {
+        cssCombo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
-            public void handle(ActionEvent actionEvent) {
-                stage.getScene().getStylesheets().setAll(cssCombo.getSelectionModel().getSelectedItem().toString());
+            public void changed(ObservableValue observableValue, Object oldStyle, Object newStyle) {
+                stage.getScene().getStylesheets().setAll(newStyle.toString());
 ;
             }
         });
