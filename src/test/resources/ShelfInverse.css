@@ -4,4 +4,5 @@
 
 .shelfDeck {
  -x-back-angle: -45;
+ -fx-padding: 30;
 }

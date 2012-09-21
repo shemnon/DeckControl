@@ -48,6 +48,7 @@ import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -389,10 +390,8 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         super.layoutChildren();
         // keep centered centered
         calculateChildSizes();
-        centered.setLayoutY((getHeight()  - (maxHeight * 1.25)) / 2);
+        centered.setLayoutY((getHeight() - (maxHeight * 1.25)) / 2);
         centered.setLayoutX((getWidth() - maxWidth) / 2);
-        setPrefSize(maxWidth * 2, maxHeight * 1.25);
-        setMinSize(maxWidth, maxHeight * 1.25);
     }
 
     private void calculateChildSizes() {
@@ -409,6 +408,13 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
             update(false);
         }
     }
+
+    @Override protected double computePrefHeight(double width) {
+        calculateChildSizes();
+        final Insets insets = getInsets();
+        return insets.getTop() + maxHeight + insets.getBottom();
+    }
+
 
     private void update(boolean animate) {
         // move items to new homes in groups
