@@ -27,12 +27,13 @@
 package com.github.shemnon.deckcontrol;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.SceneBuilder;
 import javafx.scene.control.ButtonBuilder;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBoxBuilder;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -56,54 +57,24 @@ public class DemoOne extends Application {
                                         HBoxBuilder.create().children(
                                                 ButtonBuilder.create()
                                                         .text("<<")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.previousNode();
-                                                            }
-                                                        }).build(),
+                                                        .onAction(actionEvent -> deck.previousNode()).build(),
                                                 ButtonBuilder.create()
                                                         .text(">>")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.nextNode();
-                                                            }
-                                                        }).build()
+                                                        .onAction(actionEvent -> deck.nextNode()).build()
                                         ).build(),
                                         HBoxBuilder.create().children(
                                                 ButtonBuilder.create()
                                                         .text("Slide")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.SlideDeckSkin'");
-                                                            }
-                                                        }).build(),
+                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.SlideDeckSkin'")).build(),
                                                 ButtonBuilder.create()
                                                         .text("Fade")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin'");
-                                                            }
-                                                        }).build(),
+                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin'")).build(),
                                                 ButtonBuilder.create()
                                                         .text("Shift")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'");
-                                                            }
-                                                        }).build(),
+                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'")).build(),
                                                 ButtonBuilder.create()
                                                         .text("Shelf")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'");
-                                                            }
-                                                        }).build()
+                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'")).build()
                                         ).build()
                                 ).build())
                 .width(300)

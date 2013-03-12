@@ -29,7 +29,6 @@ package com.github.shemnon.deckcontrol.skin;
 import com.github.shemnon.deckcontrol.Deck;
 import javafx.animation.TranslateTransitionBuilder;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -69,13 +68,10 @@ public class SlideDeckSkin extends AbstractDeckSkin {
             currentNode = null;
         }
 
-        EventHandler<ActionEvent> hideOldNode = new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if (hideNode != null) {
-                    hideNode.setVisible(false);
-                    hideNode.setTranslateX(0);
-                }
+        EventHandler<ActionEvent> hideOldNode = actionEvent -> {
+            if (hideNode != null) {
+                hideNode.setVisible(false);
+                hideNode.setTranslateX(0);
             }
         };
         if (hideNode == currentNode) {
@@ -137,12 +133,7 @@ public class SlideDeckSkin extends AbstractDeckSkin {
 
 
     private void addListeners() {
-        selectedIndexListener = new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                slideNewValue();
-            }
-        };
+        selectedIndexListener = (observableValue, oldNumber, newNumber) -> slideNewValue();
         deck.primaryNodeIndexProperty().addListener(selectedIndexListener);
     }
 

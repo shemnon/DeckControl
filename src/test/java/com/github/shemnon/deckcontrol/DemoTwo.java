@@ -28,11 +28,7 @@ package com.github.shemnon.deckcontrol;
 
 import com.javafx.experiments.scenicview.ScenicView;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.SceneBuilder;
@@ -56,193 +52,100 @@ public class DemoTwo extends Application {
         final Deck deck = createDeck();
         final ToggleGroup alignGroup = new ToggleGroup();
 
-        final ComboBox cssCombo;
+        final ComboBox<String> cssCombo;
 
         stage.setScene(SceneBuilder.create()
                 .root(
                         VBoxBuilder.create()
                                 .fillWidth(false)
-                                .children(
-                                        deck,
-                                        HBoxBuilder.create().children(
-                                                ButtonBuilder.create()
-                                                        .text("<<")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.previousNode();
-                                                            }
-                                                        }).build(),
-                                                ButtonBuilder.create()
-                                                        .text(">>")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.nextNode();
-                                                            }
-                                                        }).build()
-                                        ).build(),
-                                        cssCombo = ComboBoxBuilder.create()
-                                                .items(FXCollections.<Object>observableArrayList(
-                                                        "Slide.css",
-                                                        "Pile.css",
-                                                        "Shift.css",
-                                                        "Fade.css",
-                                                        "Shelf.css",
-                                                        "ShelfFlat.css",
-                                                        "ShelfTight.css",
-                                                        "ShelfInverse.css"
-                                                ))
-                                                .editable(true)
-                                                .build(),
-                                        HBoxBuilder.create().children(
-                                                ToggleButtonBuilder.create()
-                                                        .text("NW")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.TOP_LEFT);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("N")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.TOP_CENTER);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("NE")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.TOP_RIGHT);
-                                                            }
-                                                        }).build()
-                                        ).build(),
-                                        HBoxBuilder.create().children(
-                                                ToggleButtonBuilder.create()
-                                                        .text("W")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.CENTER_LEFT);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("C")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.CENTER);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("E")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.CENTER_RIGHT);
-                                                            }
-                                                        }).build()
-                                        ).build(),
-                                        HBoxBuilder.create().children(
-                                                ToggleButtonBuilder.create()
-                                                        .text("BW")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.BASELINE_LEFT);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("B")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.BASELINE_CENTER);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("BE")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.BASELINE_RIGHT);
-                                                            }
-                                                        }).build()
-                                        ).build(),
-                                        HBoxBuilder.create().children(
-                                                ToggleButtonBuilder.create()
-                                                        .text("SW")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.BOTTOM_LEFT);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("S")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.BOTTOM_CENTER);
-                                                            }
-                                                        }).build(),
-                                                ToggleButtonBuilder.create()
-                                                        .text("SE")
-                                                        .toggleGroup(alignGroup)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(Pos.BOTTOM_RIGHT);
-                                                            }
-                                                        }).build()
-                                        ).build(),
-                                        HBoxBuilder.create().children(
-                                                ToggleButtonBuilder.create()
-                                                        .text("Fill")
-                                                        .toggleGroup(alignGroup)
-                                                        .selected(true)
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.setAlignment(null);
-                                                            }
-                                                        }).build(),
-                                                ButtonBuilder.create()
-                                                        .text("ScenicView")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                ScenicView.show(stage.getScene());
-                                                            }
-                                                        }).build()
-                                        ).build()
-                                ).build())
+                                .children(new Node[]{deck, HBoxBuilder.create().children(
+                                        ButtonBuilder.create()
+                                                .text("<<")
+                                                .onAction(actionEvent -> deck.previousNode()).build(),
+                                        ButtonBuilder.create()
+                                                .text(">>")
+                                                .onAction(actionEvent -> deck.nextNode()).build()
+                                ).build(), cssCombo = ComboBoxBuilder.create(String.class)
+                                        .items(FXCollections.observableArrayList(
+                                                "Slide.css",
+                                                "Pile.css",
+                                                "Shift.css",
+                                                "Fade.css",
+                                                "Shelf.css",
+                                                "ShelfFlat.css",
+                                                "ShelfTight.css",
+                                                "ShelfInverse.css"
+                                        ))
+                                        .editable(true)
+                                        .build(), HBoxBuilder.create().children(
+                                        ToggleButtonBuilder.create()
+                                                .text("NW")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.TOP_LEFT)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("N")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.TOP_CENTER)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("NE")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.TOP_RIGHT)).build()
+                                ).build(), HBoxBuilder.create().children(
+                                        ToggleButtonBuilder.create()
+                                                .text("W")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.CENTER_LEFT)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("C")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.CENTER)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("E")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.CENTER_RIGHT)).build()
+                                ).build(), HBoxBuilder.create().children(
+                                        ToggleButtonBuilder.create()
+                                                .text("BW")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.BASELINE_LEFT)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("B")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.BASELINE_CENTER)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("BE")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.BASELINE_RIGHT)).build()
+                                ).build(), HBoxBuilder.create().children(
+                                        ToggleButtonBuilder.create()
+                                                .text("SW")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.BOTTOM_LEFT)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("S")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.BOTTOM_CENTER)).build(),
+                                        ToggleButtonBuilder.create()
+                                                .text("SE")
+                                                .toggleGroup(alignGroup)
+                                                .onAction(actionEvent -> deck.setAlignment(Pos.BOTTOM_RIGHT)).build()
+                                ).build(), HBoxBuilder.create().children(
+                                        ToggleButtonBuilder.create()
+                                                .text("Fill")
+                                                .toggleGroup(alignGroup)
+                                                .selected(true)
+                                                .onAction(actionEvent -> deck.setAlignment(null)).build(),
+                                        ButtonBuilder.create()
+                                                .text("ScenicView")
+                                                .onAction(actionEvent -> ScenicView.show(stage.getScene())).build()
+                                ).build()}).build())
                 .width(350)
                 .height(350)
                 .build());
 
-        cssCombo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldStyle, Object newStyle) {
-                stage.getScene().getStylesheets().setAll(newStyle.toString());
-;
-            }
-        });
+        cssCombo.getSelectionModel().selectedItemProperty().addListener((observableValue, oldStyle, newStyle) ->
+            stage.getScene().getStylesheets().setAll(newStyle)
+        );
         cssCombo.getSelectionModel().selectFirst();
 
         stage.setWidth(350);

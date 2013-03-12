@@ -29,9 +29,6 @@ package com.github.shemnon.deckcontrol.skin;
 import com.github.shemnon.deckcontrol.Deck;
 import javafx.animation.FadeTransitionBuilder;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
@@ -82,12 +79,9 @@ public class FadeDeckSkin extends AbstractDeckSkin {
                         .node(oldNode)
                         .toValue(0.0)
                         .duration(Duration.seconds(1))
-                        .onFinished(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                oldNode.setVisible(false);
-                                oldNode.setOpacity(1.0);
-                            }
+                        .onFinished(actionEvent -> {
+                            oldNode.setVisible(false);
+                            oldNode.setOpacity(1.0);
                         })
                         .build()
                         .play();
@@ -97,12 +91,7 @@ public class FadeDeckSkin extends AbstractDeckSkin {
 
 
     public void addListeners() {
-        selectedIndexListener = new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                updateNewNode();
-            }
-        };
+        selectedIndexListener = (observableValue, oldNumber, newNumber) -> updateNewNode();
         deck.primaryNodeIndexProperty().addListener(selectedIndexListener);
     }
 

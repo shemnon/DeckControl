@@ -33,20 +33,20 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import com.sun.javafx.css.StyleableDoubleProperty;
-import com.sun.javafx.css.StyleableProperty;
 import com.sun.javafx.css.converters.SizeConverter;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.CssMetaData;
+import javafx.css.Styleable;
+import javafx.css.StyleableDoubleProperty;
+import javafx.css.StyleableProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -68,10 +68,10 @@ import java.util.List;
  */
 public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
-    private static List<StyleableProperty> STYLEABLES;
+    private static List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
-    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_ANGLE =
-            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-angle",
+    private static final CssMetaData<ShelfDeckSkin,Number> BACK_ANGLE =
+            new CssMetaData<ShelfDeckSkin, Number>("-x-back-angle",
                     SizeConverter.getInstance(), 45.0) {
 
                 @Override
@@ -80,13 +80,13 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                public StyleableProperty<Number> getStyleableProperty(ShelfDeckSkin deck) {
                     return deck.backAngleProperty();
                 }
             };
 
-    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_OFFSET =
-            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-offset",
+    private static final CssMetaData<ShelfDeckSkin,Number> BACK_OFFSET =
+            new CssMetaData<ShelfDeckSkin, Number>("-x-back-offset",
                     SizeConverter.getInstance(), 0.25) {
 
                 @Override
@@ -95,13 +95,13 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                public StyleableProperty<Number> getStyleableProperty(ShelfDeckSkin deck) {
                     return deck.backOffsetProperty();
                 }
             };
 
-    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_SCALE =
-            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-scale",
+    private static final CssMetaData<ShelfDeckSkin,Number> BACK_SCALE =
+            new CssMetaData<ShelfDeckSkin, Number>("-x-back-scale",
                     SizeConverter.getInstance(), 0.7) {
 
                 @Override
@@ -110,13 +110,13 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                public StyleableProperty<Number> getStyleableProperty(ShelfDeckSkin deck) {
                     return deck.backScaleProperty();
                 }
             };
 
-    private static final StyleableProperty<ShelfDeckSkin,Number> BACK_SPACING =
-            new StyleableProperty<ShelfDeckSkin,Number>("-x-back-spacing",
+    private static final CssMetaData<ShelfDeckSkin,Number> BACK_SPACING =
+            new CssMetaData<ShelfDeckSkin, Number>("-x-back-spacing",
                     SizeConverter.getInstance(), 0.5) {
 
                 @Override
@@ -125,17 +125,16 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public WritableValue<Number> getWritableValue(ShelfDeckSkin deck) {
+                public StyleableProperty<Number> getStyleableProperty(ShelfDeckSkin deck) {
                     return deck.backSpacingProperty();
                 }
             };
 
 
     @Override
-    @Deprecated
-    public List<StyleableProperty> impl_getStyleableProperties() {
+    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
         if (STYLEABLES == null) {
-            final List<StyleableProperty> styleables = new ArrayList<StyleableProperty>(super.impl_getStyleableProperties());
+            final List<CssMetaData<? extends Styleable, ?>> styleables = new ArrayList<>(super.getCssMetaData());
             Collections.addAll(styleables,
                     BACK_ANGLE,
                     BACK_OFFSET,
@@ -193,7 +192,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         return backAngle == null ? 45 : backAngle.get();
     }
 
-    public final DoubleProperty backAngleProperty() {
+    public final StyleableDoubleProperty backAngleProperty() {
         if (backAngle == null) {
             backAngle = new StyleableDoubleProperty(45.0) {
 
@@ -203,7 +202,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public StyleableProperty getStyleableProperty() {
+                public CssMetaData<? extends Styleable, Number> getCssMetaData() {
                     return BACK_ANGLE;
                 }
 
@@ -233,7 +232,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         return backOffset == null ? 0.5 : backOffset.get();
     }
 
-    public final DoubleProperty backOffsetProperty() {
+    public final StyleableDoubleProperty backOffsetProperty() {
         if (backOffset == null) {
             backOffset = new StyleableDoubleProperty(0.5) {
 
@@ -243,7 +242,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public StyleableProperty getStyleableProperty() {
+                public CssMetaData<? extends Styleable, Number> getCssMetaData() {
                     return BACK_OFFSET;
                 }
 
@@ -268,7 +267,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         return backScale == null ? 0.7 : backScale.get();
     }
 
-    public final DoubleProperty backScaleProperty() {
+    public final StyleableDoubleProperty backScaleProperty() {
         if (backScale == null) {
             backScale = new StyleableDoubleProperty(0.7) {
 
@@ -278,7 +277,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public StyleableProperty getStyleableProperty() {
+                public CssMetaData<? extends Styleable, Number> getCssMetaData() {
                     return BACK_SCALE;
                 }
 
@@ -303,7 +302,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
         return backSpacing == null ? 0.25: backSpacing.get();
     }
 
-    public final DoubleProperty backSpacingProperty() {
+    public final StyleableDoubleProperty backSpacingProperty() {
         if (backSpacing == null) {
             backSpacing = new StyleableDoubleProperty(0.25) {
 
@@ -313,7 +312,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
                 }
 
                 @Override
-                public StyleableProperty getStyleableProperty() {
+                public CssMetaData<? extends Styleable, Number> getCssMetaData() {
                     return BACK_SPACING;
                 }
 
@@ -333,7 +332,7 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
 
     private void createItems() {
         List<Node> nodes = deck.getNodes();
-        items = new ArrayList<Item>(nodes.size());
+        items = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             n.setVisible(true);
             items.add(new Item(n));
@@ -362,23 +361,14 @@ public class ShelfDeckSkin extends Region implements Skin<Deck> {
     }
 
     protected void addListeners() {
-        shiftListener = new InvalidationListener() {
-
-            @Override
-            public void invalidated(Observable observable) {
-                shift(deck.getPrimaryNodeIndex() - centerIndex);
-            }
-        };
+        shiftListener = observable -> shift(deck.getPrimaryNodeIndex() - centerIndex);
 
         deck.primaryNodeIndexProperty().addListener(shiftListener);
 
-        positionTrigger = new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                createItems();
-                positionDeck();
-                update(false);
-            }
+        positionTrigger = observable -> {
+            createItems();
+            positionDeck();
+            update(false);
         };
         deck.nodesProperty().addListener(positionTrigger);
         deck.alignmentProperty().addListener(positionTrigger);
@@ -578,11 +568,7 @@ class Item extends Parent {
         setEffect(transform);
         getChildren().addAll(node);
         angle.set(45.0);
-        angle.addListener(new InvalidationListener() {
-            public void invalidated(Observable vm) {
-                updateAngle();
-            }
-        });
+        angle.addListener(vm -> updateAngle());
         addListeners();
     }
 
@@ -608,12 +594,7 @@ class Item extends Parent {
     }
 
     public void addListeners() {
-        resizeListener = new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                setupTransform();
-            }
-        };
+        resizeListener = observable -> setupTransform();
 
         node.boundsInParentProperty().addListener(resizeListener);
     }

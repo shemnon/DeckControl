@@ -32,7 +32,6 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransitionBuilder;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -56,12 +55,7 @@ public class ShiftDeckSkin extends AbstractDeckSkin {
         super(deck);
         shownIndex = deck.getPrimaryNodeIndex();
         sequentialTransition = new SequentialTransition();
-        sequentialTransition.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                sequentialTransition.getChildren().clear();
-            }
-        });
+        sequentialTransition.setOnFinished(actionEvent -> sequentialTransition.getChildren().clear());
         addListeners();
     }
 
@@ -82,13 +76,10 @@ public class ShiftDeckSkin extends AbstractDeckSkin {
             currentNode = null;
         }
 
-        EventHandler<ActionEvent> hideOldNode = new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if (oldNode != null) {
-                    oldNode.setVisible(false);
-                    oldNode.setTranslateX(0);
-                }
+        EventHandler<ActionEvent> hideOldNode = actionEvent -> {
+            if (oldNode != null) {
+                oldNode.setVisible(false);
+                oldNode.setTranslateX(0);
             }
         };
         ParallelTransition transition = new ParallelTransition();
@@ -156,12 +147,7 @@ public class ShiftDeckSkin extends AbstractDeckSkin {
 
 
     public void addListeners() {
-        primaryIndexListener = new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                shiftNewValue();
-            }
-        };
+        primaryIndexListener = (observableValue, oldNumber, newNumber) -> shiftNewValue();
         deck.primaryNodeIndexProperty().addListener(primaryIndexListener);
     }
 

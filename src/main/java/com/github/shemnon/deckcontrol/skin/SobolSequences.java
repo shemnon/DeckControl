@@ -5,7 +5,6 @@ package com.github.shemnon.deckcontrol.skin;
  * User: shemnon
  * Date: 17 Sep 2012
  * Time: 8:40 PM
- * To change this template use File | Settings | File Templates.
  */
 public class SobolSequences {
 

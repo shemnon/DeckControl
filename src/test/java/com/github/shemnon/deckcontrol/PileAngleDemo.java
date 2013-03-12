@@ -28,10 +28,6 @@ package com.github.shemnon.deckcontrol;
 
 import com.github.shemnon.deckcontrol.skin.PileDeckSkin;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.SceneBuilder;
 import javafx.scene.control.ButtonBuilder;
@@ -68,20 +64,10 @@ public class PileAngleDemo extends Application {
                                         HBoxBuilder.create().children(
                                                 ButtonBuilder.create()
                                                         .text("<<")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.previousNode();
-                                                            }
-                                                        }).build(),
+                                                        .onAction(actionEvent -> deck.previousNode()).build(),
                                                 ButtonBuilder.create()
                                                         .text(">>")
-                                                        .onAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                deck.nextNode();
-                                                            }
-                                                        }).build()
+                                                        .onAction(actionEvent -> deck.nextNode()).build()
                                         ).build(),
                                         HBoxBuilder.create().children(
                                                 new Label("Deck Position:"),
@@ -104,12 +90,7 @@ public class PileAngleDemo extends Application {
                 .height(300)
                 .build());
 
-        angleSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                ((PileDeckSkin) deck.getSkin()).setSpreadAngle(newValue.doubleValue());
-            }
-        });
+        angleSlider.valueProperty().addListener((observableValue, oldValue, newValue) -> ((PileDeckSkin) deck.getSkin()).setSpreadAngle(newValue.doubleValue()));
         deckSlider.valueProperty().bindBidirectional(deck.primaryNodeIndexProperty());
 
         stage.setWidth(300);

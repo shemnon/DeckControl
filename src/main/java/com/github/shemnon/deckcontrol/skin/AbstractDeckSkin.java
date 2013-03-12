@@ -28,7 +28,7 @@ package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
+
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -160,21 +160,13 @@ public class AbstractDeckSkin  extends StackPane implements Skin<Deck> {
 
         setClip(clip);
 
-        layoutBoundsProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                positionDeck();
-                clip.setWidth(getLayoutBounds().getWidth());
-                clip.setHeight(getLayoutBounds().getHeight());
-            }
+        layoutBoundsProperty().addListener(observable -> {
+            positionDeck();
+            clip.setWidth(getLayoutBounds().getWidth());
+            clip.setHeight(getLayoutBounds().getHeight());
         });
 
-        positionTrigger = new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                positionDeck();
-            }
-        };
+        positionTrigger = observable -> positionDeck();
         deck.nodesProperty().addListener(positionTrigger);
         deck.alignmentProperty().addListener(positionTrigger);
     }

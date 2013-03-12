@@ -27,17 +27,14 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import com.sun.javafx.css.StyleableDoubleProperty;
-import com.sun.javafx.css.StyleableProperty;
 import com.sun.javafx.css.converters.SizeConverter;
 import javafx.animation.*;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.css.CssMetaData;
+import javafx.css.Styleable;
+import javafx.css.StyleableDoubleProperty;
+import javafx.css.StyleableProperty;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
@@ -53,10 +50,10 @@ import java.util.List;
  */
 public class PileDeckSkin extends AbstractDeckSkin {
 
-    private static List<StyleableProperty> STYLEABLES;
+    private static List<CssMetaData<? extends Styleable,?>> STYLEABLES;
 
-    private static final StyleableProperty<PileDeckSkin,Number> SPREAD_ANGLE =
-            new StyleableProperty<PileDeckSkin,Number>("-x-spread-angle",
+    private static final CssMetaData<PileDeckSkin,Number> SPREAD_ANGLE =
+            new CssMetaData<PileDeckSkin,Number>("-x-spread-angle",
                     SizeConverter.getInstance(), 45.0) {
 
                 @Override
@@ -65,16 +62,16 @@ public class PileDeckSkin extends AbstractDeckSkin {
                 }
 
                 @Override
-                public WritableValue<Number> getWritableValue(PileDeckSkin deck) {
+                public StyleableProperty<Number> getStyleableProperty(PileDeckSkin deck) {
                     return deck.spreadAngleProperty();
                 }
             };
 
     @Override
     @Deprecated
-    public List<StyleableProperty> impl_getStyleableProperties() {
+    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
         if (STYLEABLES == null) {
-            final List<StyleableProperty> styleables = new ArrayList<StyleableProperty>(super.impl_getStyleableProperties());
+            final List<CssMetaData<? extends Styleable,?>> styleables = new ArrayList<>(super.getCssMetaData());
             Collections.addAll(styleables,
                     SPREAD_ANGLE);
             STYLEABLES = Collections.unmodifiableList(styleables);
@@ -96,12 +93,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
         getStyleClass().add("pileSkin");
         shownIndex = deck.getPrimaryNodeIndex();
         sequentialTransition = new SequentialTransition();
-        sequentialTransition.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                sequentialTransition.getChildren().clear();
-            }
-        });
+        sequentialTransition.setOnFinished(actionEvent -> sequentialTransition.getChildren().clear());
         addListeners();
     }
 
@@ -126,7 +118,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
         return spreadAngle == null ? 45.0 : spreadAngle.get();
     }
 
-    public final DoubleProperty spreadAngleProperty() {
+    public final StyleableDoubleProperty spreadAngleProperty() {
         if (spreadAngle == null) {
             spreadAngle = new StyleableDoubleProperty(45.0) {
 
@@ -136,7 +128,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
                 }
 
                 @Override
-                public StyleableProperty getStyleableProperty() {
+                public CssMetaData<? extends Styleable, Number> getCssMetaData() {
                     return SPREAD_ANGLE;
                 }
 
@@ -165,7 +157,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
         int lastIndex = shownIndex;
         shownIndex = deck.getPrimaryNodeIndex();
 
-        List<Animation> transitions = new ArrayList<Animation>(Math.abs(lastIndex - shownIndex));
+        List<Animation> transitions = new ArrayList<>(Math.abs(lastIndex - shownIndex));
         Duration duration = Duration.millis(250);
         if (lastIndex < shownIndex) {
             // drop cards in
@@ -207,12 +199,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
                                 FadeTransitionBuilder.create()
                                         .fromValue(1.0)
                                         .toValue(0.0)
-                                        .onFinished(new EventHandler<ActionEvent>() {
-                                            @Override
-                                            public void handle(ActionEvent actionEvent) {
-                                                node.setVisible(false);
-                                            }
-                                        })
+                                        .onFinished(actionEvent -> node.setVisible(false))
                                         .node(node)
                                         .duration(duration)
                                         .build(),
@@ -262,12 +249,7 @@ public class PileDeckSkin extends AbstractDeckSkin {
     }
 
     public void addListeners() {
-        selectedIndexListener = new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                updateNewNode();
-            }
-        };
+        selectedIndexListener = (observableValue, oldNumber, newNumber) -> updateNewNode();
         deck.primaryNodeIndexProperty().addListener(selectedIndexListener);
     }
 

@@ -31,11 +31,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.SceneBuilder;
 import javafx.scene.control.Button;
@@ -68,56 +64,53 @@ public class DemoThree extends Application {
         final Duration quarterSec = Duration.millis(250);
         final Duration quarter2Sec = Duration.millis(250);//.add(Duration.ONE);
         final Button flipButton = new Button("Flip");
-        flipButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                flipButton.setDisable(true);
+        flipButton.setOnAction(actionEvent -> {
+            flipButton.setDisable(true);
 
-                Timeline timeline = new Timeline();
-                final ObservableList<KeyFrame> keyFrames = timeline.getKeyFrames();
-                if (front.isVisible()) {
-                    keyFrames.addAll(
-                            new KeyFrame(Duration.ZERO,
-                                    new KeyValue(flipPane.angleProperty(), 90),
-                                    new KeyValue(front.visibleProperty(), true),
-                                    new KeyValue(back.visibleProperty(), false)),
-                            new KeyFrame(quarterSec,
-                                    new KeyValue(flipPane.angleProperty(), 180, Interpolator.EASE_IN),
-                                    new KeyValue(front.visibleProperty(), true),
-                                    new KeyValue(back.visibleProperty(), false)),
-                            new KeyFrame(quarter2Sec,
-                                    new KeyValue(flipPane.angleProperty(), 0),
-                                    new KeyValue(front.visibleProperty(), false),
-                                    new KeyValue(back.visibleProperty(), true)),
-                            new KeyFrame(halfSec,
-                                    new KeyValue(flipPane.angleProperty(), 90, Interpolator.EASE_OUT),
-                                    new KeyValue(front.visibleProperty(), false),
-                                    new KeyValue(back.visibleProperty(), true),
-                                    new KeyValue(flipButton.disableProperty(), false))
-                    );
-                } else {
-                    keyFrames.addAll(
-                            new KeyFrame(Duration.ZERO,
-                                    new KeyValue(flipPane.angleProperty(), 90),
-                                    new KeyValue(front.visibleProperty(), false),
-                                    new KeyValue(back.visibleProperty(), true)),
-                            new KeyFrame(quarterSec,
-                                    new KeyValue(flipPane.angleProperty(), 0, Interpolator.EASE_IN),
-                                    new KeyValue(front.visibleProperty(), false),
-                                    new KeyValue(back.visibleProperty(), true)),
-                            new KeyFrame(quarter2Sec,
-                                    new KeyValue(flipPane.angleProperty(), 180),
-                                    new KeyValue(front.visibleProperty(), true),
-                                    new KeyValue(back.visibleProperty(), false)),
-                            new KeyFrame(halfSec,
-                                    new KeyValue(flipPane.angleProperty(), 90, Interpolator.EASE_OUT),
-                                    new KeyValue(front.visibleProperty(), true),
-                                    new KeyValue(back.visibleProperty(), false),
-                                    new KeyValue(flipButton.disableProperty(), false))
-                    );
-                }
-                timeline.play();
+            Timeline timeline = new Timeline();
+            final ObservableList<KeyFrame> keyFrames = timeline.getKeyFrames();
+            if (front.isVisible()) {
+                keyFrames.addAll(
+                        new KeyFrame(Duration.ZERO,
+                                new KeyValue(flipPane.angleProperty(), 90),
+                                new KeyValue(front.visibleProperty(), true),
+                                new KeyValue(back.visibleProperty(), false)),
+                        new KeyFrame(quarterSec,
+                                new KeyValue(flipPane.angleProperty(), 180, Interpolator.EASE_IN),
+                                new KeyValue(front.visibleProperty(), true),
+                                new KeyValue(back.visibleProperty(), false)),
+                        new KeyFrame(quarter2Sec,
+                                new KeyValue(flipPane.angleProperty(), 0),
+                                new KeyValue(front.visibleProperty(), false),
+                                new KeyValue(back.visibleProperty(), true)),
+                        new KeyFrame(halfSec,
+                                new KeyValue(flipPane.angleProperty(), 90, Interpolator.EASE_OUT),
+                                new KeyValue(front.visibleProperty(), false),
+                                new KeyValue(back.visibleProperty(), true),
+                                new KeyValue(flipButton.disableProperty(), false))
+                );
+            } else {
+                keyFrames.addAll(
+                        new KeyFrame(Duration.ZERO,
+                                new KeyValue(flipPane.angleProperty(), 90),
+                                new KeyValue(front.visibleProperty(), false),
+                                new KeyValue(back.visibleProperty(), true)),
+                        new KeyFrame(quarterSec,
+                                new KeyValue(flipPane.angleProperty(), 0, Interpolator.EASE_IN),
+                                new KeyValue(front.visibleProperty(), false),
+                                new KeyValue(back.visibleProperty(), true)),
+                        new KeyFrame(quarter2Sec,
+                                new KeyValue(flipPane.angleProperty(), 180),
+                                new KeyValue(front.visibleProperty(), true),
+                                new KeyValue(back.visibleProperty(), false)),
+                        new KeyFrame(halfSec,
+                                new KeyValue(flipPane.angleProperty(), 90, Interpolator.EASE_OUT),
+                                new KeyValue(front.visibleProperty(), true),
+                                new KeyValue(back.visibleProperty(), false),
+                                new KeyValue(flipButton.disableProperty(), false))
+                );
             }
+            timeline.play();
         });
 
         Slider slider;
@@ -140,12 +133,7 @@ public class DemoThree extends Application {
                 .width(300)
                 .height(300)
                 .build());
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-                spinPane.setAngle(newValue.doubleValue());
-            }
-        });
+        slider.valueProperty().addListener((observableValue, oldValue, newValue) -> spinPane.setAngle(newValue.doubleValue()));
 
         stage.setWidth(300);
         stage.setHeight(300);
@@ -159,17 +147,14 @@ public class DemoThree extends Application {
         final Node back = createTestNode("Back");
         spinPane.getChildren().add(back);
         spinPane.getChildren().add(front);
-        spinPane.angleProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldNumber, Number newNumber) {
-                // normalize the angle
-                double angle = newNumber.doubleValue();
-                if (angle < 0 || angle > 360) {
-                    angle = Math.abs(360 - Math.abs(angle));
-                }
-                front.setVisible(angle < 180);
-                back.setVisible(angle > 180);
+        spinPane.angleProperty().addListener((observableValue, oldNumber, newNumber) -> {
+            // normalize the angle
+            double angle = newNumber.doubleValue();
+            if (angle < 0 || angle > 360) {
+                angle = Math.abs(360 - Math.abs(angle));
             }
+            front.setVisible(angle < 180);
+            back.setVisible(angle > 180);
         });
         spinPane.setAngle(90);
         return spinPane;

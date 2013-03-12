@@ -32,8 +32,6 @@
  */
 package com.github.shemnon.deckcontrol;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.effect.PerspectiveTransform;
@@ -52,11 +50,7 @@ public class SpinPane extends Pane {
         // create content
         setEffect(transform);
         setupTransform();
-        angle.addListener(new InvalidationListener() {
-            public void invalidated(Observable vm) {
-                updateAngle();
-            }
-        });
+        angle.addListener(vm -> updateAngle());
         addListeners();
     }
 
@@ -96,12 +90,7 @@ public class SpinPane extends Pane {
     }
 
     public void addListeners() {
-        layoutBoundsProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                setupTransform();
-            }
-        });
+        layoutBoundsProperty().addListener(observable -> setupTransform());
     }
 
 }

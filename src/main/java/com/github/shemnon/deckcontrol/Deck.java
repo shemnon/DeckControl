@@ -15,9 +15,9 @@ import javafx.scene.control.Control;
  */
 public class Deck extends Control {
 
-    private ListProperty<Node> nodes = new SimpleListProperty<Node>(this, "nodes", FXCollections.<Node>observableArrayList());
+    private ListProperty<Node> nodes = new SimpleListProperty<>(this, "nodes", FXCollections.<Node>observableArrayList());
     private IntegerProperty primaryNodeIndex = new SimpleIntegerProperty(this, "primaryNodeIndex", -1);
-    private ObjectProperty<Pos> alignment = new SimpleObjectProperty<Pos>(this, "alignment", null);
+    private ObjectProperty<Pos> alignment = new SimpleObjectProperty<>(this, "alignment", null);
 
     public Deck() {
         getStyleClass().add("deck");
