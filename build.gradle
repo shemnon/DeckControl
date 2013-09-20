@@ -5,13 +5,11 @@ repositories {
 }
 
 dependencies {
-    compile files("${System.properties['java.home']}/lib/jfxrt.jar")
-    testCompile files("lib/ScenicView.jar")
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.1'
+    gradleVersion = '1.6'
 }
 
 ['DemoOne','DemoTwo','DemoThree', 'PileAngleDemo'].each { name ->
