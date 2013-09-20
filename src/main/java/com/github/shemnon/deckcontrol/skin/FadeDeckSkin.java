@@ -27,7 +27,7 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import javafx.animation.FadeTransitionBuilder;
+import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.util.Duration;
@@ -65,26 +65,20 @@ public class FadeDeckSkin extends AbstractDeckSkin {
             if (currentNode != null) {
                 currentNode.setOpacity(0.0);
                 currentNode.setVisible(true);
-                FadeTransitionBuilder.create()
-                        .node(currentNode)
-                        .fromValue(0.0)
-                        .toValue(1.0)
-                        .duration(Duration.seconds(1))
-                        .build()
-                        .play();
+                FadeTransition fade = new FadeTransition(Duration.seconds(1), currentNode);
+                fade.setFromValue(0.0);
+                fade.setToValue(1.0);
+                fade.play();
             }
             if (oldNode != null) {
                 // slide last slide to left
-                FadeTransitionBuilder.create()
-                        .node(oldNode)
-                        .toValue(0.0)
-                        .duration(Duration.seconds(1))
-                        .onFinished(actionEvent -> {
-                            oldNode.setVisible(false);
-                            oldNode.setOpacity(1.0);
-                        })
-                        .build()
-                        .play();
+                FadeTransition fade = new FadeTransition(Duration.seconds(1), oldNode);
+                fade.setToValue(0.0);
+                fade.setOnFinished(actionEvent -> {
+                    oldNode.setVisible(false);
+                    oldNode.setOpacity(1.0);}
+                );
+                fade.play();
             }
         }
     }

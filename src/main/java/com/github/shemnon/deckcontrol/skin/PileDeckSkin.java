@@ -168,22 +168,19 @@ public class PileDeckSkin extends AbstractDeckSkin {
                 node.setScaleY(4.0);
                 node.setScaleZ(4.0);
                 node.setVisible(true);
-                transitions.add(
-                        new ParallelTransition(
-                                FadeTransitionBuilder.create()
-                                    .toValue(1.0)
-                                    .node(node)
-                                    .duration(duration)
-                                    .build(),
-                                ScaleTransitionBuilder.create()
-                                    .fromX(4.0).fromY(4.0).fromZ(4.0)
-                                    .toX(1.0).toY(1.0).toZ(1.0)
-                                    .node(node)
-                                    .duration(duration)
-                                    .build()
-                        )
-                );
 
+                FadeTransition fade = new FadeTransition(duration, node);
+                fade.setToValue(1.0);
+
+                ScaleTransition scale = new ScaleTransition(duration, node);
+                scale.setFromX(4.0);
+                scale.setFromY(4.0);
+                scale.setFromZ(4.0);
+                scale.setToX(1.0);
+                scale.setToY(1.0);
+                scale.setToZ(1.0);
+
+                transitions.add(new ParallelTransition(fade, scale));
             }
         } else if (lastIndex > shownIndex) {
             // flop cards out
@@ -194,23 +191,21 @@ public class PileDeckSkin extends AbstractDeckSkin {
                 node.setScaleY(1.0);
                 node.setScaleZ(1.0);
                 node.setVisible(true);
-                transitions.add(
-                        new ParallelTransition(
-                                FadeTransitionBuilder.create()
-                                        .fromValue(1.0)
-                                        .toValue(0.0)
-                                        .onFinished(actionEvent -> node.setVisible(false))
-                                        .node(node)
-                                        .duration(duration)
-                                        .build(),
-                                ScaleTransitionBuilder.create()
-                                        .fromX(1.0).fromY(1.0).fromZ(1.0)
-                                        .toX(4.0).toY(4.0).toZ(4.0)
-                                        .node(node)
-                                        .duration(duration)
-                                        .build()
-                        )
-                );
+
+                FadeTransition fade = new FadeTransition(duration, node);
+                fade.setFromValue(1.0);
+                fade.setToValue(0.0);
+                fade.setOnFinished(actionEvent -> node.setVisible(false));
+
+                ScaleTransition scale = new ScaleTransition(duration, node);
+                scale.setFromX(1.0);
+                scale.setFromY(1.0);
+                scale.setFromZ(1.0);
+                scale.setToX(4.0);
+                scale.setToY(4.0);
+                scale.setToZ(4.0);
+
+                transitions.add(new ParallelTransition(fade, scale));
             }
         }
 

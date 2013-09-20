@@ -28,12 +28,12 @@ package com.github.shemnon.deckcontrol;
 
 import javafx.application.Application;
 import javafx.scene.Node;
-import javafx.scene.SceneBuilder;
-import javafx.scene.control.ButtonBuilder;
-import javafx.scene.layout.HBoxBuilder;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBoxBuilder;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -48,42 +48,31 @@ public class DemoOne extends Application {
     public void start(Stage stage) throws Exception {
         final Deck deck = createDeck();
 
-        stage.setScene(SceneBuilder.create()
-                .root(
-                        VBoxBuilder.create()
-                                .fillWidth(false)
-                                .children(
-                                        deck,
-                                        HBoxBuilder.create().children(
-                                                ButtonBuilder.create()
-                                                        .text("<<")
-                                                        .onAction(actionEvent -> deck.previousNode()).build(),
-                                                ButtonBuilder.create()
-                                                        .text(">>")
-                                                        .onAction(actionEvent -> deck.nextNode()).build()
-                                        ).build(),
-                                        HBoxBuilder.create().children(
-                                                ButtonBuilder.create()
-                                                        .text("Slide")
-                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.SlideDeckSkin'")).build(),
-                                                ButtonBuilder.create()
-                                                        .text("Fade")
-                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin'")).build(),
-                                                ButtonBuilder.create()
-                                                        .text("Shift")
-                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'")).build(),
-                                                ButtonBuilder.create()
-                                                        .text("Shelf")
-                                                        .onAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'")).build()
-                                        ).build()
-                                ).build())
-                .width(300)
-                .height(300)
-                .build());
+        Button left = new Button("<<");
+        left.setOnAction(actionEvent -> deck.previousNode());
+        Button right = new Button("<<");
+        right.setOnAction(actionEvent -> deck.nextNode());
 
+        Button slide = new Button("Slide");
+        slide.setOnAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.SlideDeckSkin'"));
+        Button fade = new Button("Fade");
+        fade.setOnAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.FadeDeckSkin'"));
+        Button shift = new Button("Shift");
+        shift.setOnAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShiftDeckSkin'"));
+        Button shelf = new Button("Shelf");
+        shelf.setOnAction(actionEvent -> deck.setStyle("-fx-skin: 'com.github.shemnon.deckcontrol.skin.ShelfDeckSkin'"));
 
-        stage.setWidth(300);
-        stage.setHeight(300);
+        VBox box = new VBox(
+                deck,
+                new HBox(left, right),
+                new HBox(slide, fade, shift, shelf)
+        );
+        box.setFillWidth(false);
+        box.setPrefWidth(300);
+        box.setPrefHeight(300);
+
+        Scene scene = new Scene(box);
+        stage.setScene(scene);
 
         stage.show();
     }

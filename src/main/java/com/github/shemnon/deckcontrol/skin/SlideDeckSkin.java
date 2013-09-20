@@ -27,7 +27,7 @@
 package com.github.shemnon.deckcontrol.skin;
 
 import com.github.shemnon.deckcontrol.Deck;
-import javafx.animation.TranslateTransitionBuilder;
+import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -81,24 +81,21 @@ public class SlideDeckSkin extends AbstractDeckSkin {
                 // slide next slide from right
                 currentNode.setTranslateX(deck.getWidth());
                 currentNode.setVisible(true);
-                TranslateTransitionBuilder.create()
-                        .node(currentNode)
-                        .fromX(deck.getWidth())
-                        .toX(0)
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build()
-                        .play();
+
+                TranslateTransition translate = new TranslateTransition(Duration.seconds(1), currentNode);
+                translate.setFromX(deck.getWidth());
+                translate.setToX(0);
+                translate.setOnFinished(hideOldNode);
+
+                translate.play();
             } else {
                 // slide last slide to left
-                TranslateTransitionBuilder.create()
-                        .node(hideNode)
-                        .fromX(0)
-                        .toX(-deck.getWidth())
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build()
-                        .play();
+                TranslateTransition translate = new TranslateTransition(Duration.seconds(1), hideNode);
+                translate.setFromX(0);
+                translate.setToX(-deck.getWidth());
+                translate.setOnFinished(hideOldNode);
+
+                translate.play();
             }
         } else {
             if (hideNode != null) {
@@ -107,26 +104,23 @@ public class SlideDeckSkin extends AbstractDeckSkin {
                     currentNode.setTranslateX(0);
                     currentNode.setVisible(true);
                 }
-                TranslateTransitionBuilder.create()
-                        .node(hideNode)
-                        .fromX(0)
-                        .toX(deck.getWidth())
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build()
-                        .play();
+                TranslateTransition translate = new TranslateTransition(Duration.seconds(1), hideNode);
+                translate.setFromX(0);
+                translate.setToX(deck.getWidth());
+                translate.setOnFinished(hideOldNode);
+
+                translate.play();
             } else {
                 // slide current slide from left
                 currentNode.setTranslateX(-deck.getWidth());
                 currentNode.setVisible(true);
-                TranslateTransitionBuilder.create()
-                        .node(currentNode)
-                        .fromX(-deck.getWidth())
-                        .toX(0)
-                        .duration(Duration.seconds(1))
-                        .onFinished(hideOldNode)
-                        .build()
-                        .play();
+
+                TranslateTransition translate = new TranslateTransition(Duration.seconds(1), currentNode);
+                translate.setFromX(-deck.getWidth());
+                translate.setToX(0);
+                translate.setOnFinished(hideOldNode);
+
+                translate.play();
             }
         }
     }
